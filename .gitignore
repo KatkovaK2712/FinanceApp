@@ -1,0 +1,45 @@
+# Finance App
+.dart_tool/
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+.idea/
+*.iml
+*.lock
+*.pid
+*.swp
+*.swo
+**/android/local.properties
+**/android/app/google-services.json
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/ServiceDefinitions.json
+**/ios/Runner/GeneratedPluginRegistrant.*
+*.log
+
+# Крупные временные и сборочные файлы Flutter
+*.dill
+*.apk
+*.aab
+*.so
+*.dylib
+*.framework
+
+# iOS сборка и поды
+ios/Pods/
+ios/Podfile.lock
+ios/.symlinks/
+ios/Flutter/App.framework
+ios/Flutter/Flutter.framework
+ios/Runner/GeneratedPluginRegistrant.h
+ios/Runner/GeneratedPluginRegistrant.m
+
+# Другие временные папки
+**/ios/.symlinks/
+**/build/
+**/.dart_tool/
+**/DerivedData/
+
+# Android временное (на всякий случай)
+android/app/.cxx/
+android/app/build/

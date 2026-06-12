@@ -1,0 +1,15 @@
+{
+  "project": "finance_app_clean",
+  "platform": "ios",
+  "github": {
+    "owner": "Katkova2712",
+    "repo": "finance_app"
+  },
+  "ios": {},
+  "flutter": {
+    "version": "3.41.6",
+    "watch": {}
+  },
+  "reactNative": {},
+  "mobai": {}
+}
