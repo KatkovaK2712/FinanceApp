@@ -1,9 +1,9 @@
 {
-  "project": "finance_app_clean",
+  "project": "finance_app_ios",
   "platform": "ios",
   "github": {
-    "owner": "Katkova2712",
-    "repo": "finance_app"
+    "owner": "KatkovaK2712",
+    "repo": "finance_app_ios"
   },
   "ios": {},
   "flutter": {
