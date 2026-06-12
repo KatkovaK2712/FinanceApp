@@ -185,170 +185,110 @@ jobs:
             echo "Building with scheme: $SCHEME (configuration: $CONFIGURATION)"
           fi
 
-          # Use custom DerivedData path for caching
-          DERIVED_DATA_PATH="${GITHUB_WORKSPACE}/DerivedData"
-
-          if [ "$PROJECT_TYPE" = "flutter" ]; then
-            cd ..
-            if [ "$CONFIGURATION" = "Debug" ]; then
-              echo "Building Flutter iOS Debug..."
-              flutter build ios --debug --no-codesign
-            else
-              echo "Building Flutter iOS Release..."
-              flutter build ios --release --no-codesign
-            fi
-            cd "$IOS_PATH"
-          elif [ "$PROJECT_TYPE" = "reactnative" ] || [ "$PROJECT_TYPE" = "expo" ]; then
-            # Use xcodebuild directly for React Native/Expo
-            echo "Building React Native iOS ($CONFIGURATION)..."
-            BUILD_CMD="xcodebuild"
-            if [ -n "$WORKSPACE" ]; then
-              BUILD_CMD="$BUILD_CMD -workspace $WORKSPACE"
-            elif [ -n "$PROJECT" ]; then
-              BUILD_CMD="$BUILD_CMD -project $PROJECT"
-            fi
-
-            # Auto-detect scheme from workspace name (e.g., MyApp.xcworkspace -> MyApp)
-            if [ -n "$WORKSPACE" ]; then
-              SCHEME=$(basename "$WORKSPACE" .xcworkspace)
-            elif [ -n "$PROJECT" ]; then
-              SCHEME=$(basename "$PROJECT" .xcodeproj)
-            fi
-
-            BUILD_CMD="$BUILD_CMD -scheme $SCHEME"
-            BUILD_CMD="$BUILD_CMD -configuration $CONFIGURATION"
-            BUILD_CMD="$BUILD_CMD -destination 'generic/platform=iOS'"
-            BUILD_CMD="$BUILD_CMD -derivedDataPath $DERIVED_DATA_PATH"
-            BUILD_CMD="$BUILD_CMD CODE_SIGNING_ALLOWED=NO"
-            BUILD_CMD="$BUILD_CMD COMPILER_INDEX_STORE_ENABLE=NO"
-            BUILD_CMD="$BUILD_CMD -quiet build"
-
-            echo "Running: $BUILD_CMD"
-            eval $BUILD_CMD
-          else
-            BUILD_CMD="xcodebuild"
-            if [ -n "$WORKSPACE" ]; then
-              BUILD_CMD="$BUILD_CMD -workspace $WORKSPACE"
-            elif [ -n "$PROJECT" ]; then
-              BUILD_CMD="$BUILD_CMD -project $PROJECT"
-            fi
-
-            BUILD_CMD="$BUILD_CMD -scheme $SCHEME"
-            BUILD_CMD="$BUILD_CMD -configuration $CONFIGURATION"
-            BUILD_CMD="$BUILD_CMD -destination 'generic/platform=iOS'"
-            BUILD_CMD="$BUILD_CMD -derivedDataPath $DERIVED_DATA_PATH"
-
-            # Speed optimization flags
-            BUILD_CMD="$BUILD_CMD COMPILER_INDEX_STORE_ENABLE=NO"
-            BUILD_CMD="$BUILD_CMD DEBUG_INFORMATION_FORMAT=dwarf"
-            BUILD_CMD="$BUILD_CMD ONLY_ACTIVE_ARCH=YES"
-            BUILD_CMD="$BUILD_CMD -quiet"
-
-            # Xcode 16+ native compilation caching
-            BUILD_CMD="$BUILD_CMD SWIFT_ENABLE_COMPILE_CACHE=YES"
-            BUILD_CMD="$BUILD_CMD CLANG_ENABLE_COMPILE_CACHE=YES"
-
-            if [ "$USE_SIGNING" = "true" ]; then
-              # For signed builds, use archive
-              BUILD_CMD="$BUILD_CMD -archivePath ../build/App.xcarchive archive"
-            else
-              # For unsigned builds, use faster 'build' action
-              BUILD_CMD="$BUILD_CMD CODE_SIGNING_ALLOWED=NO build"
-            fi
-
-            echo "Running: $BUILD_CMD"
-            eval $BUILD_CMD
-          fi
-
-          # Create IPA
-          if [ "$USE_SIGNING" = "true" ]; then
-            # For signed builds, use xcodebuild -exportArchive
-            cd ..
-            printf '%s\n' \
-              '<?xml version="1.0" encoding="UTF-8"?>' \
-              '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">' \
-              '<plist version="1.0">' \
-              '<dict>' \
-              '    <key>method</key>' \
-              '    <string>development</string>' \
-              '    <key>signingStyle</key>' \
-              '    <string>automatic</string>' \
-              '</dict>' \
-              '</plist>' > ExportOptions.plist
-            xcodebuild -exportArchive \
-              -archivePath build/App.xcarchive \
-              -exportOptionsPlist ExportOptions.plist \
-              -exportPath build/export
-
-            # Move IPA to expected location
-            mv build/export/*.ipa "build/$BUILD_ID.ipa"
-            echo "Created signed IPA: build/$BUILD_ID.ipa"
-          else
-            # For unsigned builds, find .app and create IPA
-            if [ "$PROJECT_TYPE" = "flutter" ]; then
-              # Flutter outputs to build/ios/iphoneos/
-              APP_PATH=$(find "${GITHUB_WORKSPACE}/build/ios/iphoneos" -name "*.app" -type d | head -1)
-            else
-              # Native and React Native/Expo use DerivedData
-              APP_PATH=$(find "$DERIVED_DATA_PATH/Build/Products/${CONFIGURATION}-iphoneos" -name "*.app" -type d | head -1)
-            fi
-
-            if [ -z "$APP_PATH" ]; then
-              echo "Error: Could not find .app"
-              exit 1
-            fi
-            echo "Found app at: $APP_PATH"
-            cd ..
-            mkdir -p build/Payload
-            cp -R "$APP_PATH" build/Payload/
-            cd build
-            zip -rq "$BUILD_ID.ipa" Payload
-            rm -rf Payload
-            echo "Created unsigned IPA: build/$BUILD_ID.ipa"
-          fi
-
-      - name: Upload IPA artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ipa
-          path: build/*.ipa
-          retention-days: 7
-          if-no-files-found: error
-
-      - name: Save DerivedData cache
-        uses: actions/cache/save@v4
-        if: always()
-        with:
-          path: DerivedData
-          key: deriveddata-${{ github.run_id }}
-
-      - name: Cleanup signing
-        if: always() && inputs.use_signing
-        run: |
-          if [ -n "$KEYCHAIN_PATH" ] && [ -f "$KEYCHAIN_PATH" ]; then
-            security delete-keychain "$KEYCHAIN_PATH" || true
-          fi
-
-      - name: Build summary
-        if: always()
-        env:
-          USE_SIGNING: ${{ inputs.use_signing }}
-          CONFIGURATION: ${{ inputs.configuration }}
-        run: |
-          echo "## Build Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- **Build ID:** ${{ inputs.build_id }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Status:** ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Configuration:** $CONFIGURATION" >> $GITHUB_STEP_SUMMARY
-          echo "- **DerivedData Cache:** ${{ steps.cache-deriveddata.outputs.cache-hit == 'true' && 'Hit' || 'Miss' }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Pods Cache:** ${{ steps.pods-cache.outputs.cache-hit == 'true' && 'Hit' || 'Miss' }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Node Modules Cache:** ${{ steps.node-modules-cache.outputs.cache-hit == 'true' && 'Hit' || 'N/A' }}" >> $GITHUB_STEP_SUMMARY
-          if [ "$USE_SIGNING" = "true" ]; then
-            echo "- **Signing:** Signed (development)" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "- **Signing:** Unsigned (sign locally with AltStore/Sideloadly)" >> $GITHUB_STEP_SUMMARY
-          fi
-          if [ -f build/*.ipa ]; then
-            IPA_PATH=$(find build -name "*.ipa" -type f | head -1)
-            echo "- **IPA Size:** $(ls -lh "$IPA_PATH" | awk '{print $5}')" >> $GITHUB_STEP_SUMMARY
-          fi
+                # Use custom DerivedData path for caching
+      DERIVED_DATA_PATH="${GITHUB_WORKSPACE}/DerivedData"
+      
+      if [ "$PROJECT_TYPE" = "flutter" ]; then
+        # Важно: остаёмся в корне репозитория (там, где pubspec.yaml)
+        if [ "$CONFIGURATION" = "Debug" ]; then
+          echo "Building Flutter iOS Debug..."
+          flutter build ios --debug --no-codesign
+        else
+          echo "Building Flutter iOS Release..."
+          flutter build ios --release --no-codesign
+        fi
+      elif [ "$PROJECT_TYPE" = "reactnative" ] || [ "$PROJECT_TYPE" = "expo" ]; then
+        # Navigate to iOS project
+        cd "$IOS_PATH"
+        # ... остальной код для React Native
+        echo "Building React Native iOS ($CONFIGURATION)..."
+        BUILD_CMD="xcodebuild"
+        if [ -n "$WORKSPACE" ]; then
+          BUILD_CMD="$BUILD_CMD -workspace $WORKSPACE"
+        elif [ -n "$PROJECT" ]; then
+          BUILD_CMD="$BUILD_CMD -project $PROJECT"
+        fi
+        # Auto-detect scheme from workspace name
+        if [ -n "$WORKSPACE" ]; then
+          SCHEME=$(basename "$WORKSPACE" .xcworkspace)
+        elif [ -n "$PROJECT" ]; then
+          SCHEME=$(basename "$PROJECT" .xcodeproj)
+        fi
+        BUILD_CMD="$BUILD_CMD -scheme $SCHEME"
+        BUILD_CMD="$BUILD_CMD -configuration $CONFIGURATION"
+        BUILD_CMD="$BUILD_CMD -destination 'generic/platform=iOS'"
+        BUILD_CMD="$BUILD_CMD -derivedDataPath $DERIVED_DATA_PATH"
+        BUILD_CMD="$BUILD_CMD CODE_SIGNING_ALLOWED=NO"
+        BUILD_CMD="$BUILD_CMD COMPILER_INDEX_STORE_ENABLE=NO"
+        BUILD_CMD="$BUILD_CMD -quiet build"
+        echo "Running: $BUILD_CMD"
+        eval $BUILD_CMD
+      else
+        # Native iOS project
+        cd "$IOS_PATH"
+        BUILD_CMD="xcodebuild"
+        if [ -n "$WORKSPACE" ]; then
+          BUILD_CMD="$BUILD_CMD -workspace $WORKSPACE"
+        elif [ -n "$PROJECT" ]; then
+          BUILD_CMD="$BUILD_CMD -project $PROJECT"
+        fi
+        BUILD_CMD="$BUILD_CMD -scheme $SCHEME"
+        BUILD_CMD="$BUILD_CMD -configuration $CONFIGURATION"
+        BUILD_CMD="$BUILD_CMD -destination 'generic/platform=iOS'"
+        BUILD_CMD="$BUILD_CMD -derivedDataPath $DERIVED_DATA_PATH"
+        BUILD_CMD="$BUILD_CMD COMPILER_INDEX_STORE_ENABLE=NO"
+        BUILD_CMD="$BUILD_CMD DEBUG_INFORMATION_FORMAT=dwarf"
+        BUILD_CMD="$BUILD_CMD ONLY_ACTIVE_ARCH=YES"
+        BUILD_CMD="$BUILD_CMD -quiet"
+        BUILD_CMD="$BUILD_CMD SWIFT_ENABLE_COMPILE_CACHE=YES"
+        BUILD_CMD="$BUILD_CMD CLANG_ENABLE_COMPILE_CACHE=YES"
+        if [ "$USE_SIGNING" = "true" ]; then
+          BUILD_CMD="$BUILD_CMD -archivePath ../build/App.xcarchive archive"
+        else
+          BUILD_CMD="$BUILD_CMD CODE_SIGNING_ALLOWED=NO build"
+        fi
+        echo "Running: $BUILD_CMD"
+        eval $BUILD_CMD
+      fi
+      
+      # Create IPA
+      if [ "$USE_SIGNING" = "true" ]; then
+        # ... (оставь как было)
+        cd ..
+        printf '%s\n' \
+          '<?xml version="1.0" encoding="UTF-8"?>' \
+          '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">' \
+          '<plist version="1.0">' \
+          '<dict>' \
+          '    <key>method</key>' \
+          '    <string>development</string>' \
+          '    <key>signingStyle</key>' \
+          '    <string>automatic</string>' \
+          '</dict>' \
+          '</plist>' > ExportOptions.plist
+        xcodebuild -exportArchive \
+          -archivePath build/App.xcarchive \
+          -exportOptionsPlist ExportOptions.plist \
+          -exportPath build/export
+        mv build/export/*.ipa "build/$BUILD_ID.ipa"
+        echo "Created signed IPA: build/$BUILD_ID.ipa"
+      else
+        # For unsigned builds, find .app and create IPA
+        if [ "$PROJECT_TYPE" = "flutter" ]; then
+          APP_PATH=$(find "${GITHUB_WORKSPACE}/build/ios/iphoneos" -name "*.app" -type d | head -1)
+        else
+          APP_PATH=$(find "$DERIVED_DATA_PATH/Build/Products/${CONFIGURATION}-iphoneos" -name "*.app" -type d | head -1)
+        fi
+        if [ -z "$APP_PATH" ]; then
+          echo "Error: Could not find .app"
+          exit 1
+        fi
+        echo "Found app at: $APP_PATH"
+        cd "$GITHUB_WORKSPACE"
+        mkdir -p build/Payload
+        cp -R "$APP_PATH" build/Payload/
+        cd build
+        zip -rq "$BUILD_ID.ipa" Payload
+        rm -rf Payload
+        echo "Created unsigned IPA: build/$BUILD_ID.ipa"
+      fi
