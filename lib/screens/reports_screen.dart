@@ -1108,9 +1108,9 @@ class _ReportsScreenState extends State<ReportsScreen>
       } else if (catName == 'Должен я') {
         catColor = Colors.red;
       } else if (catName == 'Проценты') {
-        catColor = Colors.teal; // мятный цвет
+        catColor = Colors.teal;
       } else if (catName == 'Платеж по кредиту') {
-        catColor = Colors.deepOrange.shade900; // бордовый
+        catColor = Colors.deepOrange.shade900;
       } else if (_reportType == ReportType.expense) {
         catColor = category?.color ?? Colors.red;
       } else {
@@ -1264,54 +1264,55 @@ class _ReportsScreenState extends State<ReportsScreen>
           );
         }
       }
+
       if (subcategories.containsKey('') && subcategories['']! > 0) {
         final noSubAmount = subcategories['']!;
         final noSubPercentage = (noSubAmount / total * 100);
-          widgets.add(
-            Padding(
-              padding: const EdgeInsets.only(left: 56, top: 4, bottom: 4),
-              child: Row(
-                children: [
-                  Container(
-                    width: 28,
-                    height: 28,
-                    decoration: BoxDecoration(
-                      color: catColor.withOpacity(0.15),
-                      shape: BoxShape.circle,
+        widgets.add(
+          Padding(
+            padding: const EdgeInsets.only(left: 56, top: 4, bottom: 4),
+            child: Row(
+              children: [
+                Container(
+                  width: 28,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    color: catColor.withOpacity(0.15),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Icons.category, color: catColor, size: 16),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text('Без подкатегории',
+                      style: const TextStyle(fontSize: 14)),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      _formatAmount(noSubAmount),
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: catColor),
                     ),
-                    child: Icon(Icons.category, color: catColor, size: 16),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text('Без подкатегории', style: const TextStyle(fontSize: 14)),
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        _formatAmount(noSubAmount),
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: catColor),
-                      ),
-                      Text(
-                        '${noSubPercentage.toStringAsFixed(1)}%',
-                        style: TextStyle(
-                            fontSize: 11, color: Colors.grey.shade600),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                    Text(
+                      '${noSubPercentage.toStringAsFixed(1)}%',
+                      style:
+                          TextStyle(fontSize: 11, color: Colors.grey.shade600),
+                    ),
+                  ],
+                ),
+              ],
             ),
-          );
-        }
+          ),
+        );
       }
-    }
+    } // ← ЗАКРЫВАЕТ for (var catEntry in sortedCategories)
 
     return widgets;
-  }
+  } // ← ЗАКРЫВАЕТ метод _buildDetailedList
 
   List<PieChartSectionData> _buildPieSections(Map<String, double> data) {
     final total = data.values.fold(0.0, (sum, val) => sum + val);

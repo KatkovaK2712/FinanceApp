@@ -56,103 +56,102 @@ class MyApp extends StatelessWidget {
       child: Consumer3<ThemeProvider, SettingsProvider, AuthProvider>(
         builder:
             (context, themeProvider, settingsProvider, authProvider, child) {
-              return MaterialApp(
-                title: 'Личные финансы',
-                localizationsDelegates: const [
-                  GlobalMaterialLocalizations.delegate,
-                  GlobalWidgetsLocalizations.delegate,
-                  GlobalCupertinoLocalizations.delegate,
-                ],
-                supportedLocales: const [
-                  Locale('ru', 'RU'), // 👈 ТОЛЬКО РУССКИЙ
-                ],
-                theme: ThemeData(
-                  brightness: Brightness.light,
-                  primaryColor: settingsProvider.primaryColor,
-                  colorScheme: ColorScheme.light(
-                    primary: settingsProvider.primaryColor,
-                    secondary: settingsProvider.primaryColor.withOpacity(0.7),
-                  ),
-                  useMaterial3: true,
-                  appBarTheme: const AppBarTheme(
-                    backgroundColor: Colors.transparent,
-                    elevation: 0,
-                    centerTitle: true,
-                    surfaceTintColor: Colors.transparent,
-                  ),
-                  elevatedButtonTheme: ElevatedButtonThemeData(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: settingsProvider.primaryColor,
-                      foregroundColor: Colors.white,
-                    ),
-                  ),
+          return MaterialApp(
+            title: 'Личные финансы',
+            localizationsDelegates: const [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [
+              Locale('ru', 'RU'), // 👈 ТОЛЬКО РУССКИЙ
+            ],
+            theme: ThemeData(
+              brightness: Brightness.light,
+              primaryColor: settingsProvider.primaryColor,
+              colorScheme: ColorScheme.light(
+                primary: settingsProvider.primaryColor,
+                secondary: settingsProvider.primaryColor.withOpacity(0.7),
+              ),
+              useMaterial3: true,
+              appBarTheme: const AppBarTheme(
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                centerTitle: true,
+                surfaceTintColor: Colors.transparent,
+              ),
+              elevatedButtonTheme: ElevatedButtonThemeData(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: settingsProvider.primaryColor,
+                  foregroundColor: Colors.white,
                 ),
-                darkTheme: ThemeData(
-                  brightness: Brightness.dark,
-                  primaryColor: settingsProvider.primaryColor,
-                  colorScheme: ColorScheme.dark(
-                    primary: settingsProvider.primaryColor,
-                    secondary: settingsProvider.primaryColor.withOpacity(0.7),
-                  ),
-                  useMaterial3: true,
-                  appBarTheme: const AppBarTheme(
-                    backgroundColor: Colors.transparent,
-                    elevation: 0,
-                    centerTitle: true,
-                    surfaceTintColor: Colors.transparent,
-                  ),
-                  elevatedButtonTheme: ElevatedButtonThemeData(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: settingsProvider.primaryColor,
-                      foregroundColor: Colors.white,
-                    ),
-                  ),
+              ),
+            ),
+            darkTheme: ThemeData(
+              brightness: Brightness.dark,
+              primaryColor: settingsProvider.primaryColor,
+              colorScheme: ColorScheme.dark(
+                primary: settingsProvider.primaryColor,
+                secondary: settingsProvider.primaryColor.withOpacity(0.7),
+              ),
+              useMaterial3: true,
+              appBarTheme: const AppBarTheme(
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                centerTitle: true,
+                surfaceTintColor: Colors.transparent,
+              ),
+              elevatedButtonTheme: ElevatedButtonThemeData(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: settingsProvider.primaryColor,
+                  foregroundColor: Colors.white,
                 ),
-                themeMode: themeProvider.themeMode,
-                debugShowCheckedModeBanner: false,
-                home: ApiService.currentUserId != null
-                    ? const HomeScreen()
-                    : const LoginScreen(),
-                builder: (context, child) {
-                  final bottomPadding = MediaQuery.of(context).padding.bottom;
-                  return MediaQuery(
-                    data: MediaQuery.of(context).copyWith(
-                      textScaleFactor: settingsProvider.getFontScale().clamp(
+              ),
+            ),
+            themeMode: themeProvider.themeMode,
+            debugShowCheckedModeBanner: false,
+            home: ApiService.currentUserId != null
+                ? const HomeScreen()
+                : const LoginScreen(),
+            builder: (context, child) {
+              final bottomPadding = MediaQuery.of(context).padding.bottom;
+              return MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  textScaleFactor: settingsProvider.getFontScale().clamp(
                         0.8,
                         1.5,
                       ), // ограничь минимальный масштаб
-                      padding: MediaQuery.of(
-                        context,
-                      ).padding.copyWith(bottom: bottomPadding + 5),
+                  padding: MediaQuery.of(
+                    context,
+                  ).padding.copyWith(bottom: bottomPadding + 5),
+                ),
+                child: SafeArea(
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      bottom: bottomPadding > 0 ? 0 : 5,
                     ),
-                    child: SafeArea(
-                      child: Padding(
-                        padding: EdgeInsets.only(
-                          bottom: bottomPadding > 0 ? 0 : 5,
-                        ),
-                        child: child,
-                      ),
-                    ),
-                  );
-                },
-                routes: {
-                  '/login': (context) => const LoginScreen(),
-                  '/register': (context) => const RegisterScreen(),
-                  '/setup_method': (context) => const SetupMethodScreen(),
-                  '/setup_goals': (context) => const SetupGoalsScreen(),
-                  '/setup_categories': (context) =>
-                      const SetupCategoriesScreen(),
-                  '/setup_accounts': (context) => const SetupAccountsScreen(),
-                  '/setup_budget': (context) => const SetupBudgetScreen(),
-                  '/home': (context) => HomeScreen(),
-                  '/settings': (context) => const SettingsScreen(),
-                  '/profile': (context) => ProfileScreen(),
-                  '/home_settings': (context) => const HomeSettingsScreen(),
-                  '/avatar_selection': (context) =>
-                      const AvatarSelectionScreen(),
-                },
+                    child: child,
+                  ),
+                ),
               );
             },
+            routes: {
+              '/login': (context) => const LoginScreen(),
+              '/register': (context) => const RegisterScreen(),
+              '/setup_method': (context) => const SetupMethodScreen(),
+              '/setup_goals': (context) => const SetupGoalsScreen(),
+              '/setup_categories': (context) => const SetupCategoriesScreen(),
+              '/setup_accounts': (context) => const SetupAccountsScreen(),
+              '/setup_budget': (context) => const SetupBudgetScreen(),
+              '/home': (context) => HomeScreen(),
+              '/settings': (context) => const SettingsScreen(),
+              '/profile': (context) => ProfileScreen(),
+              '/home_settings': (context) => const HomeSettingsScreen(),
+              '/avatar_selection': (context) =>
+                  AvatarSelectionScreen(onAvatarSelected: (avatar) {}),
+            },
+          );
+        },
       ),
     );
   }
