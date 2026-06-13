@@ -519,12 +519,19 @@ class _ReportsScreenState extends State<ReportsScreen>
         categoryName = 'Проценты';
       }
 
+      // НОВЫЙ КОД (исправленный):
       result.putIfAbsent(categoryName, () => {});
+
       if (transaction.subCategory != null &&
           transaction.subCategory!.isNotEmpty) {
+        // Если есть подкатегория - добавляем в подкатегорию
         result[categoryName]![transaction.subCategory!] =
             (result[categoryName]![transaction.subCategory!] ?? 0) +
                 transaction.amount;
+      } else {
+        // ✅ Если подкатегории нет - добавляем в пустую строку (основная категория)
+        result[categoryName]![''] =
+            (result[categoryName]![''] ?? 0) + transaction.amount;
       }
     }
 
@@ -1246,6 +1253,50 @@ class _ReportsScreenState extends State<ReportsScreen>
                       ),
                       Text(
                         '${subPercentage.toStringAsFixed(1)}%',
+                        style: TextStyle(
+                            fontSize: 11, color: Colors.grey.shade600),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+      }
+      if (subcategories.containsKey('') && subcategories['']! > 0) {
+        final noSubAmount = subcategories['']!;
+        final noSubPercentage = (noSubAmount / total * 100);
+          widgets.add(
+            Padding(
+              padding: const EdgeInsets.only(left: 56, top: 4, bottom: 4),
+              child: Row(
+                children: [
+                  Container(
+                    width: 28,
+                    height: 28,
+                    decoration: BoxDecoration(
+                      color: catColor.withOpacity(0.15),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.category, color: catColor, size: 16),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text('Без подкатегории', style: const TextStyle(fontSize: 14)),
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        _formatAmount(noSubAmount),
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: catColor),
+                      ),
+                      Text(
+                        '${noSubPercentage.toStringAsFixed(1)}%',
                         style: TextStyle(
                             fontSize: 11, color: Colors.grey.shade600),
                       ),

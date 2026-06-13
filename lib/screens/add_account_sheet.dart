@@ -158,8 +158,10 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
           '${a.interestPaymentDate!.day}.${a.interestPaymentDate!.month}';
       final day = a.interestPaymentDate!.day;
       final lastDay = DateTime(
-              a.interestPaymentDate!.year, a.interestPaymentDate!.month + 1, 0)
-          .day;
+        a.interestPaymentDate!.year,
+        a.interestPaymentDate!.month + 1,
+        0,
+      ).day;
       _selectedCalculationDate = (day == lastDay) ? 'last' : 'first';
     }
     if (a.principalAmount != null)
@@ -228,7 +230,8 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
   // ========== РАСЧЕТ КРЕДИТА ==========
   double? _calculateMonthlyPayment() {
     final principal = double.tryParse(
-        _loanAmountController.text.replaceAll(RegExp(r'[^\d.]'), ''));
+      _loanAmountController.text.replaceAll(RegExp(r'[^\d.]'), ''),
+    );
     final rate = double.tryParse(_rateController.text);
 
     if (principal == null || rate == null || principal <= 0 || rate <= 0)
@@ -253,7 +256,8 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
       if (monthlyRate == 0) {
         result = principal / months;
       } else {
-        final factor = monthlyRate *
+        final factor =
+            monthlyRate *
             pow(1 + monthlyRate, months) /
             (pow(1 + monthlyRate, months) - 1);
         result = principal * factor;
@@ -310,7 +314,8 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
       if (_loanAmountController.text.isEmpty) {
         return 'Введите сумму основного долга';
       }
-      final hasTerm = _loanTermYearsController.text.isNotEmpty ||
+      final hasTerm =
+          _loanTermYearsController.text.isNotEmpty ||
           _loanTermMonthsController.text.isNotEmpty ||
           _loanTermDaysController.text.isNotEmpty;
       if (!hasTerm) {
@@ -321,7 +326,9 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
   }
 
   Color _getDefaultColorForType(
-      AccountType type, List<Account> existingAccounts) {
+    AccountType type,
+    List<Account> existingAccounts,
+  ) {
     final List<Color> allColorOptions = [
       Colors.red,
       Colors.redAccent,
@@ -461,12 +468,15 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
 
     if (_selectedType == AccountType.loan) {
       final principal = double.tryParse(
-          _loanAmountController.text.replaceAll(RegExp(r'[^\d.]'), ''));
+        _loanAmountController.text.replaceAll(RegExp(r'[^\d.]'), ''),
+      );
       final rate = double.tryParse(_rateController.text);
 
       if (principal == null || rate == null || principal <= 0 || rate <= 0) {
         SnackbarUtils.showError(
-            context, 'Введите корректные данные для кредита');
+          context,
+          'Введите корректные данные для кредита',
+        );
         return;
       }
 
@@ -496,7 +506,8 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
         if (monthlyRate == 0) {
           calculatedMonthlyPayment = principal / months;
         } else {
-          final factor = monthlyRate *
+          final factor =
+              monthlyRate *
               pow(1 + monthlyRate, months) /
               (pow(1 + monthlyRate, months) - 1);
           calculatedMonthlyPayment = principal * factor;
@@ -519,9 +530,13 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
       remainingPrincipal = principal;
 
       print(
-          '📊 Кредит: основной долг = $principal, проценты = $totalInterest, ежемесячный платёж = $calculatedMonthlyPayment, баланс = $balance, срок = $months мес');
+        '📊 Кредит: основной долг = $principal, проценты = $totalInterest, ежемесячный платёж = $calculatedMonthlyPayment, баланс = $balance, срок = $months мес',
+      );
     } else {
-      balance = AmountFormatter.parseToDouble(_balanceController.text);
+      String balanceRaw = _balanceController.text
+          .replaceAll(' ', '')
+          .replaceAll(',', '.');
+      balance = double.tryParse(balanceRaw) ?? 0;
     }
 
     // ========== РАСЧЕТ ДАТЫ ДЛЯ НАКОПИТЕЛЬНОГО СЧЕТА ==========
@@ -542,8 +557,11 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
       try {
         final parts = _statementDateController.text.split('.');
         if (parts.length == 2) {
-          billingDate =
-              DateTime(2000, int.parse(parts[1]), int.parse(parts[0]));
+          billingDate = DateTime(
+            2000,
+            int.parse(parts[1]),
+            int.parse(parts[0]),
+          );
         }
       } catch (e) {
         print('Ошибка парсинга даты: $e');
@@ -565,7 +583,8 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
       termMonthsValue = int.tryParse(_termMonthsController.text);
     }
 
-    final accountId = widget.accountToEdit?.id ??
+    final accountId =
+        widget.accountToEdit?.id ??
         'acc_${DateTime.now().millisecondsSinceEpoch}';
 
     final account = Account(
@@ -586,25 +605,28 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
           ? double.tryParse(_rateController.text)
           : null,
       interestAccountId: _selectedInterestAccountId,
-      interestPeriod:
-          _selectedType == AccountType.savings ? _selectedInterestPeriod : null,
+      interestPeriod: _selectedType == AccountType.savings
+          ? _selectedInterestPeriod
+          : null,
       interestCalculationType: _selectedType == AccountType.savings
           ? _selectedCalculationType
           : null,
       interestPaymentDate: paymentDate,
 
       // Для вклада
-      isCapitalized:
-          _selectedType == AccountType.deposit ? _isCapitalization : null,
+      isCapitalized: _selectedType == AccountType.deposit
+          ? _isCapitalization
+          : null,
       capitalizationFrequency:
           _selectedType == AccountType.deposit && _isCapitalization
-              ? _selectedCapitalizationFrequency
-              : null,
+          ? _selectedCapitalizationFrequency
+          : null,
       termMonths: _selectedType == AccountType.deposit ? termMonthsValue : null,
       closureAccountId: _selectedClosureAccountId,
       allowDeposit: _selectedType == AccountType.deposit ? _allowDeposit : null,
-      allowWithdraw:
-          _selectedType == AccountType.deposit ? _allowWithdraw : null,
+      allowWithdraw: _selectedType == AccountType.deposit
+          ? _allowWithdraw
+          : null,
       depositStartDate: depositStartDate,
       depositEndDate: depositEndDate,
       depositTermYears: depositTermYears,
@@ -663,8 +685,10 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
 
     widget.onAccountAdded(account);
     Navigator.pop(context);
-    SnackbarUtils.showSuccess(context,
-        widget.accountToEdit == null ? 'Счет создан' : 'Счет обновлен');
+    SnackbarUtils.showSuccess(
+      context,
+      widget.accountToEdit == null ? 'Счет создан' : 'Счет обновлен',
+    );
   }
 
   Future<int> _getMainAccountsCount() async {
@@ -690,14 +714,20 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
   void _onAmountChanged(TextEditingController controller) {
     String raw = controller.text.replaceAll(RegExp(r'[^\d,.]'), '');
     raw = raw.replaceAll(',', '.');
+
+    // Ограничиваем количество знаков после запятой (максимум 2)
     final parts = raw.split('.');
     if (parts.length > 2) {
-      raw = parts[0] + '.' + parts.sublist(1).join();
+      raw = parts[0] + '.' + parts[1].substring(0, 2);
+    } else if (parts.length == 2 && parts[1].length > 2) {
+      raw = parts[0] + '.' + parts[1].substring(0, 2);
     }
+
     if (raw.isNotEmpty && raw != '.') {
       final number = double.tryParse(raw);
       if (number != null) {
-        controller.text = NumberFormat('#,##0.##', 'ru_RU').format(number);
+        // Форматируем с 2 десятичными знаками
+        controller.text = NumberFormat('#,##0.00', 'ru_RU').format(number);
         controller.selection = TextSelection.fromPosition(
           TextPosition(offset: controller.text.length),
         );
@@ -718,15 +748,18 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (imagePath != null)
                   ColorFiltered(
-                    colorFilter:
-                        ColorFilter.mode(colorScheme.primary, BlendMode.srcIn),
+                    colorFilter: ColorFilter.mode(
+                      colorScheme.primary,
+                      BlendMode.srcIn,
+                    ),
                     child: Image.asset(imagePath, height: 80),
                   ),
                 const SizedBox(height: 12),
@@ -745,13 +778,20 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
     );
   }
 
-  Widget _buildTextField(String label, TextEditingController controller,
-      {String? hint, IconData? prefixIcon, bool isNumber = false}) {
+  Widget _buildTextField(
+    String label,
+    TextEditingController controller, {
+    String? hint,
+    IconData? prefixIcon,
+    bool isNumber = false,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        ),
         const SizedBox(height: 8),
         TextField(
           controller: controller,
@@ -759,7 +799,7 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
           onChanged: (value) {
             _clearValidationError();
             if (isNumber) {
-              _onAmountChanged(controller);
+              //_onAmountChanged(controller);
             }
           },
           decoration: InputDecoration(
@@ -772,8 +812,11 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
     );
   }
 
-  Widget _buildSmallTextField(String label, TextEditingController controller,
-      {bool isNumber = false}) {
+  Widget _buildSmallTextField(
+    String label,
+    TextEditingController controller, {
+    bool isNumber = false,
+  }) {
     return TextField(
       controller: controller,
       keyboardType: isNumber ? TextInputType.number : TextInputType.text,
@@ -790,8 +833,10 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        ),
         const SizedBox(height: 8),
         TextField(
           controller: controller,
@@ -818,15 +863,20 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
     );
   }
 
-  Widget _buildDropdown<T>(String label, T? value,
-      List<DropdownMenuItem<T>> items, Function(T?) onChanged) {
+  Widget _buildDropdown<T>(
+    String label,
+    T? value,
+    List<DropdownMenuItem<T>> items,
+    Function(T?) onChanged,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (label.isNotEmpty) ...[
-          Text(label,
-              style:
-                  const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+          Text(
+            label,
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+          ),
           const SizedBox(height: 4),
         ],
         DropdownButtonFormField<T>(
@@ -839,8 +889,10 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
           },
           decoration: InputDecoration(
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 8,
+            ),
           ),
         ),
       ],
@@ -848,8 +900,11 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
   }
 
   Widget _buildAccountDropdown(
-      String label, String? value, Function(String?) onChanged,
-      {bool includeCurrentAccount = false}) {
+    String label,
+    String? value,
+    Function(String?) onChanged, {
+    bool includeCurrentAccount = false,
+  }) {
     List<Account> availableAccounts = List.from(_accounts);
     if (includeCurrentAccount && _nameController.text.isNotEmpty) {
       final tempAccount = Account(
@@ -870,8 +925,10 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+        ),
         const SizedBox(height: 4),
         DropdownButtonFormField<String>(
           value: value,
@@ -886,8 +943,10 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
           },
           decoration: InputDecoration(
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 8,
+            ),
           ),
         ),
       ],
@@ -929,15 +988,18 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
   // ========== ВКЛАД ==========
   Widget _buildDepositFields() {
     final capitalizationFrequencies = ['day', 'week', 'month', 'quarter']
-        .map((f) =>
-            DropdownMenuItem(value: f, child: Text(_getFrequencyName(f))))
+        .map(
+          (f) => DropdownMenuItem(value: f, child: Text(_getFrequencyName(f))),
+        )
         .toList();
 
     return Column(
       children: [
         const Divider(),
-        const Text('Параметры вклада',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        const Text(
+          'Параметры вклада',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
         if (_validationError != null)
           Container(
             margin: const EdgeInsets.only(top: 8, bottom: 8),
@@ -961,38 +1023,60 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
             ),
           ),
         const SizedBox(height: 16),
-        _buildTextField('Процентная ставка (%)', _rateController,
-            isNumber: true),
+        _buildTextField(
+          'Процентная ставка (%)',
+          _rateController,
+          isNumber: true,
+        ),
         const SizedBox(height: 12),
         _buildDateField('Дата открытия вклада', _depositStartDateController),
         const SizedBox(height: 12),
-        const Text('Срок вклада (на текущий момент)',
-            style: TextStyle(
-                fontSize: 14, fontWeight: FontWeight.w500, color: Colors.grey)),
+        const Text(
+          'Срок вклада (на текущий момент)',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Colors.grey,
+          ),
+        ),
         const SizedBox(height: 4),
         Row(
           children: [
             Expanded(
-                child: _buildSmallTextField('лет', _depositTermYearsController,
-                    isNumber: true)),
+              child: _buildSmallTextField(
+                'лет',
+                _depositTermYearsController,
+                isNumber: true,
+              ),
+            ),
             const SizedBox(width: 8),
             Expanded(
-                child: _buildSmallTextField('мес', _depositTermMonthsController,
-                    isNumber: true)),
+              child: _buildSmallTextField(
+                'мес',
+                _depositTermMonthsController,
+                isNumber: true,
+              ),
+            ),
             const SizedBox(width: 8),
             Expanded(
-                child: _buildSmallTextField('дн', _depositTermDaysController,
-                    isNumber: true)),
+              child: _buildSmallTextField(
+                'дн',
+                _depositTermDaysController,
+                isNumber: true,
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 12),
         Row(
           children: [
             Expanded(
-                child: _buildSwitchTile(
-                    'Капитализация процентов',
-                    _isCapitalization,
-                    (v) => setState(() => _isCapitalization = v))),
+              child: _buildSwitchTile(
+                'Капитализация процентов',
+                _isCapitalization,
+                (v) => setState(() => _isCapitalization = v),
+              ),
+            ),
             _buildInfoButton(
               'Капитализация процентов — это прибавление начисленных процентов к сумме вклада.',
               imagePath: 'assets/images/neko.png',
@@ -1002,28 +1086,37 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
         if (_isCapitalization) ...[
           const SizedBox(height: 12),
           _buildDropdown(
-              'Частота капитализации',
-              _selectedCapitalizationFrequency,
-              capitalizationFrequencies,
-              (v) => setState(() => _selectedCapitalizationFrequency = v!)),
+            'Частота капитализации',
+            _selectedCapitalizationFrequency,
+            capitalizationFrequencies,
+            (v) => setState(() => _selectedCapitalizationFrequency = v!),
+          ),
           const SizedBox(height: 12),
           _buildAccountDropdown(
-              'Счет для начисления процентов',
-              _selectedInterestAccountId,
-              (v) => setState(() => _selectedInterestAccountId = v),
-              includeCurrentAccount: true),
+            'Счет для начисления процентов',
+            _selectedInterestAccountId,
+            (v) => setState(() => _selectedInterestAccountId = v),
+            includeCurrentAccount: true,
+          ),
         ],
         const SizedBox(height: 12),
         _buildAccountDropdown(
-            'Счет при закрытии вклада',
-            _selectedClosureAccountId,
-            (v) => setState(() => _selectedClosureAccountId = v)),
+          'Счет при закрытии вклада',
+          _selectedClosureAccountId,
+          (v) => setState(() => _selectedClosureAccountId = v),
+        ),
         const SizedBox(height: 12),
-        _buildSwitchTile('Возможность пополнения', _allowDeposit,
-            (v) => setState(() => _allowDeposit = v)),
+        _buildSwitchTile(
+          'Возможность пополнения',
+          _allowDeposit,
+          (v) => setState(() => _allowDeposit = v),
+        ),
         const SizedBox(height: 12),
-        _buildSwitchTile('Возможность снятия', _allowWithdraw,
-            (v) => setState(() => _allowWithdraw = v)),
+        _buildSwitchTile(
+          'Возможность снятия',
+          _allowWithdraw,
+          (v) => setState(() => _allowWithdraw = v),
+        ),
       ],
     );
   }
@@ -1031,31 +1124,45 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
   // ========== НАКОПИТЕЛЬНЫЙ СЧЕТ ==========
   Widget _buildSavingsFields() {
     final periodOptions = ['day', 'month']
-        .map((p) => DropdownMenuItem(
-            value: p, child: Text(p == 'day' ? 'День' : 'Месяц')))
+        .map(
+          (p) => DropdownMenuItem(
+            value: p,
+            child: Text(p == 'day' ? 'День' : 'Месяц'),
+          ),
+        )
         .toList();
 
     final calculationOptions = ['minimal', 'actual']
-        .map((c) => DropdownMenuItem(
+        .map(
+          (c) => DropdownMenuItem(
             value: c,
-            child: Text(c == 'minimal'
-                ? 'На минимальный остаток'
-                : 'На фактический остаток')))
+            child: Text(
+              c == 'minimal'
+                  ? 'На минимальный остаток'
+                  : 'На фактический остаток',
+            ),
+          ),
+        )
         .toList();
 
     final dateOptions = ['last', 'first']
-        .map((d) => DropdownMenuItem(
+        .map(
+          (d) => DropdownMenuItem(
             value: d,
-            child: Text(d == 'last'
-                ? 'Последнее число месяца'
-                : 'Первое число месяца')))
+            child: Text(
+              d == 'last' ? 'Последнее число месяца' : 'Первое число месяца',
+            ),
+          ),
+        )
         .toList();
 
     return Column(
       children: [
         const Divider(),
-        const Text('Параметры накопительного счета',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        const Text(
+          'Параметры накопительного счета',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
         if (_validationError != null)
           Container(
             margin: const EdgeInsets.only(top: 8, bottom: 8),
@@ -1079,40 +1186,52 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
             ),
           ),
         const SizedBox(height: 16),
-        _buildTextField('Процентная ставка (%)', _rateController,
-            isNumber: true),
+        _buildTextField(
+          'Процентная ставка (%)',
+          _rateController,
+          isNumber: true,
+        ),
         const SizedBox(height: 12),
         _buildAccountDropdown(
-            'Счет для начисления процентов',
-            _selectedInterestAccountId,
-            (v) => setState(() => _selectedInterestAccountId = v),
-            includeCurrentAccount: true),
+          'Счет для начисления процентов',
+          _selectedInterestAccountId,
+          (v) => setState(() => _selectedInterestAccountId = v),
+          includeCurrentAccount: true,
+        ),
         const SizedBox(height: 12),
-        _buildDropdown('Расчетный период', _selectedInterestPeriod,
-            periodOptions, (v) => setState(() => _selectedInterestPeriod = v!)),
+        _buildDropdown(
+          'Расчетный период',
+          _selectedInterestPeriod,
+          periodOptions,
+          (v) => setState(() => _selectedInterestPeriod = v!),
+        ),
         if (_selectedInterestPeriod == 'month') ...[
           const SizedBox(height: 12),
           _buildDropdown(
-              'Дата расчетного периода',
-              _selectedCalculationDate,
-              dateOptions,
-              (v) => setState(() => _selectedCalculationDate = v!)),
+            'Дата расчетного периода',
+            _selectedCalculationDate,
+            dateOptions,
+            (v) => setState(() => _selectedCalculationDate = v!),
+          ),
         ],
         const SizedBox(height: 12),
         const Align(
           alignment: Alignment.centerLeft,
-          child: Text('Начисление процентов',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+          child: Text(
+            'Начисление процентов',
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+          ),
         ),
         const SizedBox(height: 8),
         Row(
           children: [
             Expanded(
               child: _buildDropdown(
-                  '',
-                  _selectedCalculationType,
-                  calculationOptions,
-                  (v) => setState(() => _selectedCalculationType = v!)),
+                '',
+                _selectedCalculationType,
+                calculationOptions,
+                (v) => setState(() => _selectedCalculationType = v!),
+              ),
             ),
             _buildInfoButton(
               'На минимальный остаток: проценты считаются от самой маленькой суммы на счете за период.\n\nНа фактический остаток: проценты считаются от ежедневного остатка.',
@@ -1127,15 +1246,21 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
   // ========== КРЕДИТ ==========
   Widget _buildLoanFields() {
     final paymentTypes = [true, false]
-        .map((t) => DropdownMenuItem(
-            value: t, child: Text(t ? 'Аннуитентный' : 'Дифференцированный')))
+        .map(
+          (t) => DropdownMenuItem(
+            value: t,
+            child: Text(t ? 'Аннуитентный' : 'Дифференцированный'),
+          ),
+        )
         .toList();
 
     return Column(
       children: [
         const Divider(),
-        const Text('Параметры кредита',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        const Text(
+          'Параметры кредита',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
         if (_validationError != null)
           Container(
             margin: const EdgeInsets.only(top: 8, bottom: 8),
@@ -1159,32 +1284,43 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
             ),
           ),
         const SizedBox(height: 16),
-        _buildTextField('Процентная ставка (%)', _rateController,
-            isNumber: true),
+        _buildTextField(
+          'Процентная ставка (%)',
+          _rateController,
+          isNumber: true,
+        ),
         const SizedBox(height: 12),
-        _buildDropdown('Вид платежа', _isAnnuity, paymentTypes,
-            (v) => setState(() => _isAnnuity = v!)),
+        _buildDropdown(
+          'Вид платежа',
+          _isAnnuity,
+          paymentTypes,
+          (v) => setState(() => _isAnnuity = v!),
+        ),
 
         // ДЕНЬ ПЛАТЕЖА
         const SizedBox(height: 12),
-        const Text('День платежа',
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+        const Text(
+          'День платежа',
+          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+        ),
         Row(
           children: [
             Expanded(
               child: DropdownButtonFormField<int>(
                 value: _selectedPaymentDay,
                 items: List.generate(
-                    31,
-                    (i) => DropdownMenuItem(
-                          value: i + 1,
-                          child: Text('${i + 1}-е число'),
-                        )),
+                  31,
+                  (i) => DropdownMenuItem(
+                    value: i + 1,
+                    child: Text('${i + 1}-е число'),
+                  ),
+                ),
                 onChanged: (value) =>
                     setState(() => _selectedPaymentDay = value!),
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12)),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
             ),
@@ -1216,25 +1352,43 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
           ),
         ),
         const SizedBox(height: 12),
-        _buildTextField('Сумма основного долга', _loanAmountController,
-            isNumber: true, prefixIcon: Icons.attach_money),
+        _buildTextField(
+          'Сумма основного долга',
+          _loanAmountController,
+          isNumber: true,
+          prefixIcon: Icons.attach_money,
+        ),
         const SizedBox(height: 12),
-        const Text('Срок кредита',
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+        const Text(
+          'Срок кредита',
+          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+        ),
         const SizedBox(height: 8),
         Row(
           children: [
             Expanded(
-                child: _buildSmallTextField('лет', _loanTermYearsController,
-                    isNumber: true)),
+              child: _buildSmallTextField(
+                'лет',
+                _loanTermYearsController,
+                isNumber: true,
+              ),
+            ),
             const SizedBox(width: 8),
             Expanded(
-                child: _buildSmallTextField('мес', _loanTermMonthsController,
-                    isNumber: true)),
+              child: _buildSmallTextField(
+                'мес',
+                _loanTermMonthsController,
+                isNumber: true,
+              ),
+            ),
             const SizedBox(width: 8),
             Expanded(
-                child: _buildSmallTextField('дн', _loanTermDaysController,
-                    isNumber: true)),
+              child: _buildSmallTextField(
+                'дн',
+                _loanTermDaysController,
+                isNumber: true,
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 16),
@@ -1246,7 +1400,8 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
             color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.3)),
+              color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+            ),
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -1258,13 +1413,17 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
                   children: [
                     const Text(
                       'Примерный',
-                      style:
-                          TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                     const Text(
                       'ежемесячный платеж:',
-                      style:
-                          TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ],
                 ),
@@ -1273,8 +1432,9 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
                 flex: 3,
                 child: Text(
                   _calculateMonthlyPayment() != null
-                      ? _formatCurrency(_calculateMonthlyPayment()!
-                          .roundToDouble()) // ✅ ОКРУГЛЕНИЕ
+                      ? _formatCurrency(
+                          _calculateMonthlyPayment()!.roundToDouble(),
+                        ) // ✅ ОКРУГЛЕНИЕ
                       : '—',
                   style: TextStyle(
                     fontSize: 16,
@@ -1334,19 +1494,30 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
             ),
             child: Row(
               children: [
-                Icon(Icons.warning_amber,
-                    color: Colors.orange.shade800, size: 20),
+                Icon(
+                  Icons.warning_amber,
+                  color: Colors.orange.shade800,
+                  size: 20,
+                ),
                 const SizedBox(width: 12),
                 Expanded(
-                    child: Text('Достигнут лимит основных счетов (максимум 8).',
-                        style: TextStyle(
-                            fontSize: 13, color: Colors.orange.shade900))),
+                  child: Text(
+                    'Достигнут лимит основных счетов (максимум 8).',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.orange.shade900,
+                    ),
+                  ),
+                ),
               ],
             ),
           );
         }
-        return _buildSwitchTile('Основной счет (баланс в шапке)',
-            _isMainAccount, (v) => setState(() => _isMainAccount = v));
+        return _buildSwitchTile(
+          'Основной счет (баланс в шапке)',
+          _isMainAccount,
+          (v) => setState(() => _isMainAccount = v),
+        );
       },
     );
   }
@@ -1355,14 +1526,20 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Тип счета',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+        const Text(
+          'Тип счета',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        ),
         const SizedBox(height: 8),
         DropdownButtonFormField<AccountType>(
           value: _selectedType,
           items: AccountType.values
-              .map((type) =>
-                  DropdownMenuItem(value: type, child: Text(type.displayName)))
+              .map(
+                (type) => DropdownMenuItem(
+                  value: type,
+                  child: Text(type.displayName),
+                ),
+              )
               .toList(),
           onChanged: (value) async {
             _clearValidationError();
@@ -1371,12 +1548,16 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
               _selectedIcon = value.defaultIcon;
             });
             final existingAccounts = await CategoryService.loadAccounts();
-            setState(() => _selectedColor =
-                _getDefaultColorForType(_selectedType, existingAccounts));
+            setState(
+              () => _selectedColor = _getDefaultColorForType(
+                _selectedType,
+                existingAccounts,
+              ),
+            );
           },
           decoration: InputDecoration(
-              border:
-                  OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          ),
         ),
       ],
     );
@@ -1406,9 +1587,10 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
                 boxShadow: isSelected
                     ? [
                         BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
-                            blurRadius: 4,
-                            offset: const Offset(0, 2))
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
                       ]
                     : null,
               ),
@@ -1425,7 +1607,9 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
       child: GridView.builder(
         shrinkWrap: true,
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 5, childAspectRatio: 1),
+          crossAxisCount: 5,
+          childAspectRatio: 1,
+        ),
         itemCount: availableIcons.length,
         itemBuilder: (context, index) {
           final iconInfo = availableIcons[index];
@@ -1443,8 +1627,11 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
                     ? Border.all(color: _selectedColor, width: 2)
                     : null,
               ),
-              child: Icon(iconInfo.icon,
-                  color: isSelected ? _selectedColor : Colors.grey, size: 28),
+              child: Icon(
+                iconInfo.icon,
+                color: isSelected ? _selectedColor : Colors.grey,
+                size: 28,
+              ),
             ),
           );
         },
@@ -1483,28 +1670,39 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
                   ? 'Новый счет'
                   : 'Редактировать счет',
               style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: colorScheme.primary),
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: colorScheme.primary,
+              ),
             ),
           ),
           Expanded(
             child: SingleChildScrollView(
               padding: EdgeInsets.only(
-                  left: 16, right: 16, top: 16, bottom: viewInsets.bottom + 80),
+                left: 16,
+                right: 16,
+                top: 16,
+                bottom: viewInsets.bottom + 80,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildTextField('Название', _nameController,
-                      hint: 'Название счета'),
+                  _buildTextField(
+                    'Название',
+                    _nameController,
+                    hint: 'Название счета',
+                  ),
                   const SizedBox(height: 20),
                   _buildTypeDropdown(),
                   const SizedBox(height: 20),
                   if (_selectedType != AccountType.loan)
-                    _buildTextField('Начальный баланс', _balanceController,
-                        hint: '0',
-                        prefixIcon: Icons.attach_money,
-                        isNumber: true),
+                    _buildTextField(
+                      'Начальный баланс',
+                      _balanceController,
+                      hint: '0',
+                      prefixIcon: Icons.attach_money,
+                      isNumber: true,
+                    ),
                   const SizedBox(height: 20),
                   if (_selectedType == AccountType.deposit)
                     _buildDepositFields(),
@@ -1518,9 +1716,10 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
                       _selectedType != AccountType.debtToPay) ...[
                     const SizedBox(height: 20),
                     _buildSwitchTile(
-                        'Показывать на главном экране',
-                        _showOnHomeScreen,
-                        (v) => setState(() => _showOnHomeScreen = v)),
+                      'Показывать на главном экране',
+                      _showOnHomeScreen,
+                      (v) => setState(() => _showOnHomeScreen = v),
+                    ),
                     const SizedBox(height: 12),
                     _buildMainAccountSwitch(),
                   ],
@@ -1531,9 +1730,10 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
                   _buildColorPicker(),
                   const SizedBox(height: 20),
                   const Divider(),
-                  const Text('Иконка счета',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                  const Text(
+                    'Иконка счета',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
                   const SizedBox(height: 12),
                   _buildIconGrid(),
                   const SizedBox(height: 30),
@@ -1547,9 +1747,10 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
               color: isDark ? Colors.grey.shade900 : Colors.white,
               boxShadow: [
                 BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, -5))
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, -5),
+                ),
               ],
             ),
             child: SafeArea(
@@ -1562,14 +1763,16 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
                     backgroundColor: colorScheme.primary,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                   child: Text(
-                      widget.accountToEdit == null
-                          ? 'Создать счет'
-                          : 'Сохранить',
-                      style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.bold)),
+                    widget.accountToEdit == null ? 'Создать счет' : 'Сохранить',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ),
             ),

@@ -99,15 +99,17 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
         color: Colors.orange,
         subCategories: [
           SubCategory(
-              id: 'food_products',
-              name: 'Супермаркет',
-              icon: Icons.shopping_cart,
-              color: Colors.orange),
+            id: 'food_products',
+            name: 'Супермаркет',
+            icon: Icons.shopping_cart,
+            color: Colors.orange,
+          ),
           SubCategory(
-              id: 'food_cafe',
-              name: 'Кафе',
-              icon: Icons.local_cafe,
-              color: Colors.orange),
+            id: 'food_cafe',
+            name: 'Кафе',
+            icon: Icons.local_cafe,
+            color: Colors.orange,
+          ),
         ],
       ),
       Category(
@@ -117,15 +119,17 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
         color: Colors.blue,
         subCategories: [
           SubCategory(
-              id: 'trans_public',
-              name: 'Общественный',
-              icon: Icons.directions_bus,
-              color: Colors.blue),
+            id: 'trans_public',
+            name: 'Общественный',
+            icon: Icons.directions_bus,
+            color: Colors.blue,
+          ),
           SubCategory(
-              id: 'trans_taxi',
-              name: 'Такси',
-              icon: Icons.taxi_alert,
-              color: Colors.blue),
+            id: 'trans_taxi',
+            name: 'Такси',
+            icon: Icons.taxi_alert,
+            color: Colors.blue,
+          ),
         ],
       ),
       Category(
@@ -135,15 +139,17 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
         color: Colors.purple,
         subCategories: [
           SubCategory(
-              id: 'ent_cinema',
-              name: 'Кино',
-              icon: Icons.movie,
-              color: Colors.purple),
+            id: 'ent_cinema',
+            name: 'Кино',
+            icon: Icons.movie,
+            color: Colors.purple,
+          ),
           SubCategory(
-              id: 'ent_games',
-              name: 'Игры',
-              icon: Icons.games,
-              color: Colors.purple),
+            id: 'ent_games',
+            name: 'Игры',
+            icon: Icons.games,
+            color: Colors.purple,
+          ),
         ],
       ),
     ];
@@ -156,15 +162,17 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
         color: Colors.green,
         subCategories: [
           SubCategory(
-              id: 'salary_main',
-              name: 'Основная',
-              icon: Icons.work,
-              color: Colors.green),
+            id: 'salary_main',
+            name: 'Основная',
+            icon: Icons.work,
+            color: Colors.green,
+          ),
           SubCategory(
-              id: 'salary_bonus',
-              name: 'Премия',
-              icon: Icons.emoji_events,
-              color: Colors.green),
+            id: 'salary_bonus',
+            name: 'Премия',
+            icon: Icons.emoji_events,
+            color: Colors.green,
+          ),
         ],
       ),
       Category(
@@ -178,14 +186,16 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
   }
 
   Color _getDefaultColorForType(
-      AccountType type, List<Account> existingAccounts) {
+    AccountType type,
+    List<Account> existingAccounts,
+  ) {
     final Map<AccountType, List<Color>> preferredColors = {
       AccountType.cash: [Colors.green, Colors.lightGreen, Colors.teal],
       AccountType.debitCard: [
         Colors.blue,
         Colors.lightBlue,
         Colors.cyan,
-        Colors.indigo
+        Colors.indigo,
       ],
       AccountType.creditCard: [Colors.red, Colors.deepOrange, Colors.orange],
       AccountType.deposit: [Colors.purple, Colors.deepPurple],
@@ -218,8 +228,9 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
   void _showFrequencyDialog() {
     int tempInterval = _recurringInterval;
     String tempFrequency = _recurringFrequency;
-    final intervalController =
-        TextEditingController(text: tempInterval.toString());
+    final intervalController = TextEditingController(
+      text: tempInterval.toString(),
+    );
 
     showDialog(
       context: context,
@@ -243,7 +254,9 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                           decoration: const InputDecoration(
                             border: OutlineInputBorder(),
                             contentPadding: EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 8),
+                              horizontal: 8,
+                              vertical: 8,
+                            ),
                           ),
                           onChanged: (value) {
                             setStateDialog(() {
@@ -258,9 +271,13 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                         items: const [
                           DropdownMenuItem(value: 'day', child: Text('день')),
                           DropdownMenuItem(
-                              value: 'week', child: Text('неделю')),
+                            value: 'week',
+                            child: Text('неделю'),
+                          ),
                           DropdownMenuItem(
-                              value: 'month', child: Text('месяц')),
+                            value: 'month',
+                            child: Text('месяц'),
+                          ),
                           DropdownMenuItem(value: 'year', child: Text('год')),
                         ],
                         onChanged: (value) {
@@ -275,10 +292,9 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .primary
-                          .withOpacity(0.1),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primary.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
@@ -498,23 +514,24 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
     if (_currentTab == TransactionTab.expense) {
       // Для расходов - показываем счета с возможностью снятия (allowWithdraw)
       filteredAccounts = accounts
-          .where((a) =>
-                  a.type != AccountType.loan &&
-                  (a.type != AccountType.deposit ||
-                      (a.allowWithdraw ?? true)) &&
-                  (a.type != AccountType.debtOwed &&
-                      a.type != AccountType.debtToPay) // долги тоже исключаем
-              )
+          .where(
+            (a) =>
+                a.type != AccountType.loan &&
+                (a.type != AccountType.deposit || (a.allowWithdraw ?? true)) &&
+                (a.type != AccountType.debtOwed &&
+                    a.type != AccountType.debtToPay), // долги тоже исключаем
+          )
           .toList();
     } else if (_currentTab == TransactionTab.income) {
       // Для доходов - показываем счета с возможностью пополнения (allowDeposit)
       filteredAccounts = accounts
-          .where((a) =>
-                  a.type != AccountType.loan &&
-                  (a.type != AccountType.deposit || (a.allowDeposit ?? true)) &&
-                  (a.type != AccountType.debtOwed &&
-                      a.type != AccountType.debtToPay) // долги тоже исключаем
-              )
+          .where(
+            (a) =>
+                a.type != AccountType.loan &&
+                (a.type != AccountType.deposit || (a.allowDeposit ?? true)) &&
+                (a.type != AccountType.debtOwed &&
+                    a.type != AccountType.debtToPay), // долги тоже исключаем
+          )
           .toList();
     } else {
       // Для переводов - отдельная логика в _buildTransferAccounts
@@ -539,8 +556,9 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
       // Если был выбран какой-то счет — ищем его в новом списке
       if (selectedAccountId != null) {
         try {
-          _selectedAccount =
-              _accounts.firstWhere((a) => a.id == selectedAccountId);
+          _selectedAccount = _accounts.firstWhere(
+            (a) => a.id == selectedAccountId,
+          );
         } catch (e) {
           // Если не нашли — сбрасываем
           _selectedAccount = null;
@@ -592,12 +610,14 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
         onSave: (updated) async {
           setState(() {
             if (isExpense) {
-              final index =
-                  _expenseCategories.indexWhere((c) => c.id == updated.id);
+              final index = _expenseCategories.indexWhere(
+                (c) => c.id == updated.id,
+              );
               if (index != -1) _expenseCategories[index] = updated;
             } else {
-              final index =
-                  _incomeCategories.indexWhere((c) => c.id == updated.id);
+              final index = _incomeCategories.indexWhere(
+                (c) => c.id == updated.id,
+              );
               if (index != -1) _incomeCategories[index] = updated;
             }
           });
@@ -612,8 +632,9 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Удалить категорию'),
-        content:
-            const Text('Все подкатегории также будут удалены. Вы уверены?'),
+        content: const Text(
+          'Все подкатегории также будут удалены. Вы уверены?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -707,8 +728,9 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
         parentCategory: parent,
         onSave: (updated) async {
           setState(() {
-            final index =
-                parent.subCategories.indexWhere((s) => s.id == updated.id);
+            final index = parent.subCategories.indexWhere(
+              (s) => s.id == updated.id,
+            );
             if (index != -1) parent.subCategories[index] = updated;
           });
           await _saveAllCategories();
@@ -749,7 +771,10 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
   }
 
   void _restoreSubCategory(
-      SubCategory subCategory, Category parent, bool isExpense) {
+    SubCategory subCategory,
+    Category parent,
+    bool isExpense,
+  ) {
     setState(() {
       parent.isHidden = false;
       subCategory.isHidden = false;
@@ -773,10 +798,12 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
   void _showRestoreDialog(bool isExpense) {
     final categories = isExpense ? _expenseCategories : _incomeCategories;
     final color = isExpense ? Colors.red.shade300 : Colors.green.shade300;
-    final hiddenCategories =
-        isExpense ? _hiddenExpenseCategories : _hiddenIncomeCategories;
-    final hiddenSubCategories =
-        isExpense ? _hiddenExpenseSubCategories : _hiddenIncomeSubCategories;
+    final hiddenCategories = isExpense
+        ? _hiddenExpenseCategories
+        : _hiddenIncomeCategories;
+    final hiddenSubCategories = isExpense
+        ? _hiddenExpenseSubCategories
+        : _hiddenIncomeSubCategories;
 
     final selectedCategories = <Category>{};
     final selectedSubIds = <String>{};
@@ -794,8 +821,10 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                 child: ListView(
                   children: [
                     if (hiddenCategories.isNotEmpty) ...[
-                      const Text('Категории:',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      const Text(
+                        'Категории:',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                       ...hiddenCategories.map(
                         (category) => Container(
                           margin: const EdgeInsets.symmetric(vertical: 2),
@@ -823,7 +852,9 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                             },
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 8),
+                                horizontal: 8,
+                                vertical: 8,
+                              ),
                               child: Row(
                                 children: [
                                   Container(
@@ -831,8 +862,10 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                                     height: 24,
                                     decoration: BoxDecoration(
                                       border: Border.all(
-                                        color: selectedCategories
-                                                .contains(category)
+                                        color:
+                                            selectedCategories.contains(
+                                              category,
+                                            )
                                             ? color
                                             : Colors.grey.shade400,
                                         width: 2,
@@ -840,13 +873,17 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                                       borderRadius: BorderRadius.circular(4),
                                       color:
                                           selectedCategories.contains(category)
-                                              ? color
-                                              : Colors.transparent,
+                                          ? color
+                                          : Colors.transparent,
                                     ),
                                     child: selectedCategories.contains(category)
                                         ? Center(
-                                            child: Icon(Icons.check,
-                                                size: 18, color: Colors.white))
+                                            child: Icon(
+                                              Icons.check,
+                                              size: 18,
+                                              color: Colors.white,
+                                            ),
+                                          )
                                         : null,
                                   ),
                                   const SizedBox(width: 12),
@@ -857,16 +894,21 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                                       color: category.color.withOpacity(0.2),
                                       shape: BoxShape.circle,
                                     ),
-                                    child: Icon(category.icon,
-                                        color: category.color, size: 18),
+                                    child: Icon(
+                                      category.icon,
+                                      color: category.color,
+                                      size: 18,
+                                    ),
                                   ),
                                   const SizedBox(width: 8),
                                   Expanded(
                                     child: Text(
                                       category.name,
                                       style: TextStyle(
-                                        fontWeight: selectedCategories
-                                                .contains(category)
+                                        fontWeight:
+                                            selectedCategories.contains(
+                                              category,
+                                            )
                                             ? FontWeight.bold
                                             : FontWeight.normal,
                                       ),
@@ -875,7 +917,9 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                                   if (selectedCategories.contains(category))
                                     Container(
                                       padding: const EdgeInsets.symmetric(
-                                          horizontal: 6, vertical: 2),
+                                        horizontal: 6,
+                                        vertical: 2,
+                                      ),
                                       decoration: BoxDecoration(
                                         color: color,
                                         borderRadius: BorderRadius.circular(12),
@@ -898,14 +942,17 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                     ],
                     if (hiddenSubCategories.isNotEmpty) ...[
                       const SizedBox(height: 16),
-                      const Text('Подкатегории:',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      const Text(
+                        'Подкатегории:',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                       ...hiddenSubCategories.entries.expand((entry) {
-                        final category =
-                            categories.firstWhere((c) => c.id == entry.key);
+                        final category = categories.firstWhere(
+                          (c) => c.id == entry.key,
+                        );
                         return entry.value.map((sub) {
-                          final isCategorySelected =
-                              selectedCategories.contains(category);
+                          final isCategorySelected = selectedCategories
+                              .contains(category);
                           return Container(
                             margin: const EdgeInsets.symmetric(vertical: 2),
                             decoration: BoxDecoration(
@@ -926,7 +973,9 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                               },
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 8),
+                                  horizontal: 8,
+                                  vertical: 8,
+                                ),
                                 child: Row(
                                   children: [
                                     Container(
@@ -936,24 +985,28 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                                         border: Border.all(
                                           color:
                                               selectedSubIds.contains(sub.id) ||
-                                                      isCategorySelected
-                                                  ? color
-                                                  : Colors.grey.shade400,
+                                                  isCategorySelected
+                                              ? color
+                                              : Colors.grey.shade400,
                                           width: 2,
                                         ),
                                         borderRadius: BorderRadius.circular(4),
                                         color:
                                             selectedSubIds.contains(sub.id) ||
-                                                    isCategorySelected
-                                                ? color
-                                                : Colors.transparent,
+                                                isCategorySelected
+                                            ? color
+                                            : Colors.transparent,
                                       ),
-                                      child: selectedSubIds.contains(sub.id) ||
+                                      child:
+                                          selectedSubIds.contains(sub.id) ||
                                               isCategorySelected
                                           ? Center(
-                                              child: Icon(Icons.check,
-                                                  size: 14,
-                                                  color: Colors.white))
+                                              child: Icon(
+                                                Icons.check,
+                                                size: 14,
+                                                color: Colors.white,
+                                              ),
+                                            )
                                           : null,
                                     ),
                                     const SizedBox(width: 12),
@@ -964,8 +1017,11 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                                         color: sub.color.withOpacity(0.2),
                                         shape: BoxShape.circle,
                                       ),
-                                      child: Icon(sub.icon,
-                                          color: sub.color, size: 14),
+                                      child: Icon(
+                                        sub.icon,
+                                        color: sub.color,
+                                        size: 14,
+                                      ),
                                     ),
                                     const SizedBox(width: 8),
                                     Expanded(
@@ -974,12 +1030,14 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                                         style: TextStyle(
                                           fontWeight:
                                               selectedSubIds.contains(sub.id) ||
-                                                      isCategorySelected
-                                                  ? FontWeight.bold
-                                                  : FontWeight.normal,
-                                          color: isCategorySelected &&
-                                                  !selectedSubIds
-                                                      .contains(sub.id)
+                                                  isCategorySelected
+                                              ? FontWeight.bold
+                                              : FontWeight.normal,
+                                          color:
+                                              isCategorySelected &&
+                                                  !selectedSubIds.contains(
+                                                    sub.id,
+                                                  )
                                               ? Colors.grey
                                               : null,
                                         ),
@@ -1023,8 +1081,9 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                       }
                       if (!alreadyRestored) {
                         for (var entry in hiddenSubCategories.entries) {
-                          final category =
-                              categories.firstWhere((c) => c.id == entry.key);
+                          final category = categories.firstWhere(
+                            (c) => c.id == entry.key,
+                          );
                           final sub = entry.value.firstWhere(
                             (s) => s.id == subId,
                             orElse: () => null as SubCategory,
@@ -1037,8 +1096,10 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                     await _saveAllCategories();
                     if (mounted) {
                       Navigator.pop(context);
-                      SnackbarUtils.showSuccess(context,
-                          'Восстановлено ${selectedCategories.length + selectedSubIds.length} элементов');
+                      SnackbarUtils.showSuccess(
+                        context,
+                        'Восстановлено ${selectedCategories.length + selectedSubIds.length} элементов',
+                      );
                     }
                   },
                   style: ElevatedButton.styleFrom(
@@ -1046,7 +1107,8 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                     foregroundColor: Colors.white,
                   ),
                   child: Text(
-                      'Восстановить (${selectedCategories.length + selectedSubIds.length})'),
+                    'Восстановить (${selectedCategories.length + selectedSubIds.length})',
+                  ),
                 ),
               ],
             );
@@ -1066,24 +1128,31 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
       builder: (context) => StatefulBuilder(
         builder: (context, setState) {
           return Dialog(
-            insetPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+            insetPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 24,
+            ),
             child: Container(
               padding: const EdgeInsets.all(20),
               child: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Text('Новая категория',
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold)),
+                    const Text(
+                      'Новая категория',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     const SizedBox(height: 16),
                     TextField(
                       controller: nameController,
                       autofocus: true,
                       decoration: const InputDecoration(
-                          labelText: 'Название категории',
-                          border: OutlineInputBorder()),
+                        labelText: 'Название категории',
+                        border: OutlineInputBorder(),
+                      ),
                     ),
                     const SizedBox(height: 16),
                     const Text('Выберите иконку:'),
@@ -1094,7 +1163,9 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                         shrinkWrap: true,
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 5, childAspectRatio: 1),
+                              crossAxisCount: 5,
+                              childAspectRatio: 1,
+                            ),
                         itemCount: availableIcons.length,
                         itemBuilder: (context, index) {
                           final iconInfo = availableIcons[index];
@@ -1142,8 +1213,9 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: const Text('Отмена')),
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text('Отмена'),
+                        ),
                         const SizedBox(width: 8),
                         ElevatedButton(
                           onPressed: () async {
@@ -1155,6 +1227,8 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                                 color: selectedColor,
                                 subCategories: [],
                               );
+
+                              // ✅ ОБНОВЛЯЕМ ЛОКАЛЬНЫЙ СПИСОК
                               setState(() {
                                 if (_currentTab == TransactionTab.expense) {
                                   _expenseCategories.add(newCategory);
@@ -1162,17 +1236,29 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                                   _incomeCategories.add(newCategory);
                                 }
                               });
-                              await _saveAllCategories();
+
+                              // ✅ СОХРАНЯЕМ ВСЕ КАТЕГОРИИ В CategoryService
+                              final allCategories = [
+                                ..._expenseCategories,
+                                ..._incomeCategories,
+                              ];
+                              await CategoryService.saveCategories(
+                                allCategories,
+                              );
+
                               if (mounted) {
                                 Navigator.pop(context);
                                 SnackbarUtils.showSuccess(
-                                    context, 'Категория добавлена');
+                                  context,
+                                  'Категория добавлена',
+                                );
                               }
                             }
                           },
                           style: ElevatedButton.styleFrom(
-                              backgroundColor: selectedColor,
-                              foregroundColor: Colors.white),
+                            backgroundColor: selectedColor,
+                            foregroundColor: Colors.white,
+                          ),
                           child: const Text('Добавить'),
                         ),
                       ],
@@ -1197,24 +1283,32 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
       builder: (context) => StatefulBuilder(
         builder: (context, setState) {
           return Dialog(
-            insetPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+            insetPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 24,
+            ),
             child: Container(
               padding: const EdgeInsets.all(20),
               child: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text('Новая подкатегория для ${category.name}',
-                        style: const TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                        textAlign: TextAlign.center),
+                    Text(
+                      'Новая подкатегория для ${category.name}',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
                     const SizedBox(height: 16),
                     TextField(
                       controller: nameController,
                       autofocus: true,
                       decoration: const InputDecoration(
-                          labelText: 'Название', border: OutlineInputBorder()),
+                        labelText: 'Название',
+                        border: OutlineInputBorder(),
+                      ),
                     ),
                     const SizedBox(height: 16),
                     const Text('Выберите иконку:'),
@@ -1225,7 +1319,9 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                         shrinkWrap: true,
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 5, childAspectRatio: 1),
+                              crossAxisCount: 5,
+                              childAspectRatio: 1,
+                            ),
                         itemCount: availableIcons.length,
                         itemBuilder: (context, index) {
                           final iconInfo = availableIcons[index];
@@ -1273,8 +1369,9 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: const Text('Отмена')),
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text('Отмена'),
+                        ),
                         const SizedBox(width: 8),
                         ElevatedButton(
                           onPressed: () async {
@@ -1285,19 +1382,24 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                                 icon: selectedIcon,
                                 color: selectedColor,
                               );
-                              setState(() =>
-                                  category.subCategories.add(newSubCategory));
+                              setState(
+                                () =>
+                                    category.subCategories.add(newSubCategory),
+                              );
                               await _saveAllCategories();
                               if (mounted) {
                                 Navigator.pop(context);
                                 SnackbarUtils.showSuccess(
-                                    context, 'Подкатегория добавлена');
+                                  context,
+                                  'Подкатегория добавлена',
+                                );
                               }
                             }
                           },
                           style: ElevatedButton.styleFrom(
-                              backgroundColor: selectedColor,
-                              foregroundColor: Colors.white),
+                            backgroundColor: selectedColor,
+                            foregroundColor: Colors.white,
+                          ),
                           child: const Text('Добавить'),
                         ),
                       ],
@@ -1334,10 +1436,12 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
     final isExpense = _currentTab == TransactionTab.expense;
     final colorScheme = Theme.of(context).colorScheme;
 
-    final hiddenCategories =
-        isExpense ? _hiddenExpenseCategories : _hiddenIncomeCategories;
-    final hiddenSubCategories =
-        isExpense ? _hiddenExpenseSubCategories : _hiddenIncomeSubCategories;
+    final hiddenCategories = isExpense
+        ? _hiddenExpenseCategories
+        : _hiddenIncomeCategories;
+    final hiddenSubCategories = isExpense
+        ? _hiddenExpenseSubCategories
+        : _hiddenIncomeSubCategories;
     final hasHidden =
         hiddenCategories.isNotEmpty || hiddenSubCategories.isNotEmpty;
 
@@ -1354,7 +1458,9 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                   label: const Text(
                     'Добавить категорию',
                     style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: colorScheme.primary,
@@ -1411,10 +1517,13 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                     children: [
                       const Icon(Icons.edit, color: Colors.white, size: 24),
                       const SizedBox(width: 8),
-                      const Text('Ред.',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold)),
+                      const Text(
+                        'Ред.',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -1428,10 +1537,13 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text('Удал.',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold)),
+                      const Text(
+                        'Удал.',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                       const SizedBox(width: 8),
                       const Icon(Icons.delete, color: Colors.white, size: 24),
                     ],
@@ -1444,15 +1556,18 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                       builder: (context) => AlertDialog(
                         title: const Text('Удалить категорию'),
                         content: const Text(
-                            'Все подкатегории также будут удалены. Вы уверены?'),
+                          'Все подкатегории также будут удалены. Вы уверены?',
+                        ),
                         actions: [
                           TextButton(
-                              onPressed: () => Navigator.pop(context, false),
-                              child: const Text('Отмена')),
+                            onPressed: () => Navigator.pop(context, false),
+                            child: const Text('Отмена'),
+                          ),
                           TextButton(
                             onPressed: () => Navigator.pop(context, true),
                             style: TextButton.styleFrom(
-                                foregroundColor: Colors.red),
+                              foregroundColor: Colors.red,
+                            ),
                             child: const Text('Удалить'),
                           ),
                         ],
@@ -1477,7 +1592,9 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                             setState(() => _selectedCategory = category),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 8),
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
                           child: Row(
                             children: [
                               Icon(Icons.drag_handle, color: Colors.grey),
@@ -1489,29 +1606,39 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                                   color: category.color.withOpacity(0.2),
                                   shape: BoxShape.circle,
                                 ),
-                                child: Icon(category.icon,
-                                    color: category.color, size: 24),
+                                child: Icon(
+                                  category.icon,
+                                  color: category.color,
+                                  size: 24,
+                                ),
                               ),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Text(
                                   category.name,
                                   style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600),
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                               ),
                               IconButton(
-                                icon:
-                                    const Icon(Icons.add, color: Colors.white),
+                                icon: const Icon(
+                                  Icons.add,
+                                  color: Colors.white,
+                                ),
                                 onPressed: () => _showAddSubCategoryDialog(
-                                    category, colorScheme.primary),
+                                  category,
+                                  colorScheme.primary,
+                                ),
                                 style: IconButton.styleFrom(
                                   backgroundColor: colorScheme.primary,
                                   padding: const EdgeInsets.all(8),
                                 ),
                                 constraints: const BoxConstraints(
-                                    minWidth: 36, minHeight: 36),
+                                  minWidth: 36,
+                                  minHeight: 36,
+                                ),
                               ),
                               const SizedBox(width: 8),
                               IconButton(
@@ -1530,7 +1657,9 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                                   padding: const EdgeInsets.all(8),
                                 ),
                                 constraints: const BoxConstraints(
-                                    minWidth: 36, minHeight: 36),
+                                  minWidth: 36,
+                                  minHeight: 36,
+                                ),
                               ),
                             ],
                           ),
@@ -1554,13 +1683,19 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    const Icon(Icons.edit,
-                                        color: Colors.white, size: 20),
+                                    const Icon(
+                                      Icons.edit,
+                                      color: Colors.white,
+                                      size: 20,
+                                    ),
                                     const SizedBox(width: 8),
-                                    const Text('Ред.',
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold)),
+                                    const Text(
+                                      'Ред.',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -1574,13 +1709,19 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    const Text('Удал.',
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold)),
+                                    const Text(
+                                      'Удал.',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                                     const SizedBox(width: 8),
-                                    const Icon(Icons.delete,
-                                        color: Colors.white, size: 20),
+                                    const Icon(
+                                      Icons.delete,
+                                      color: Colors.white,
+                                      size: 20,
+                                    ),
                                   ],
                                 ),
                               ),
@@ -1593,14 +1734,16 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                                       content: const Text('Вы уверены?'),
                                       actions: [
                                         TextButton(
-                                            onPressed: () =>
-                                                Navigator.pop(context, false),
-                                            child: const Text('Отмена')),
+                                          onPressed: () =>
+                                              Navigator.pop(context, false),
+                                          child: const Text('Отмена'),
+                                        ),
                                         TextButton(
                                           onPressed: () =>
                                               Navigator.pop(context, true),
                                           style: TextButton.styleFrom(
-                                              foregroundColor: Colors.red),
+                                            foregroundColor: Colors.red,
+                                          ),
                                           child: const Text('Удалить'),
                                         ),
                                       ],
@@ -1621,7 +1764,10 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                                 }),
                                 child: Padding(
                                   padding: const EdgeInsets.only(
-                                      left: 64, right: 12, bottom: 8),
+                                    left: 64,
+                                    right: 12,
+                                    bottom: 8,
+                                  ),
                                   child: Row(
                                     children: [
                                       Container(
@@ -1631,8 +1777,11 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                                           color: sub.color.withOpacity(0.2),
                                           shape: BoxShape.circle,
                                         ),
-                                        child: Icon(sub.icon,
-                                            color: sub.color, size: 18),
+                                        child: Icon(
+                                          sub.icon,
+                                          color: sub.color,
+                                          size: 18,
+                                        ),
                                       ),
                                       const SizedBox(width: 12),
                                       Expanded(
@@ -1642,8 +1791,11 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                                         ),
                                       ),
                                       IconButton(
-                                        icon: Icon(Icons.visibility_off,
-                                            size: 18, color: Colors.grey),
+                                        icon: Icon(
+                                          Icons.visibility_off,
+                                          size: 18,
+                                          color: Colors.grey,
+                                        ),
                                         onPressed: () =>
                                             _hideSubCategory(sub, category),
                                       ),
@@ -1668,28 +1820,30 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
   // Получить счета для списания (from) - исключаем кредиты и вклады без снятия
   List<Account> _getFromAccounts() {
     return _accounts
-        .where((a) =>
-                a.type !=
-                    AccountType
-                        .loan && // кредиты нельзя использовать для списания
-                (a.type != AccountType.deposit ||
-                    (a.allowWithdraw ??
-                        true)) // вклады только если разрешено снятие
-            )
+        .where(
+          (a) =>
+              a.type !=
+                  AccountType
+                      .loan && // кредиты нельзя использовать для списания
+              (a.type != AccountType.deposit ||
+                  (a.allowWithdraw ??
+                      true)), // вклады только если разрешено снятие
+        )
         .toList();
   }
 
   // Получить счета для зачисления (to) - исключаем вклады без пополнения
   List<Account> _getToAccounts() {
     return _accounts
-        .where((a) =>
-                a.type !=
-                    AccountType
-                        .loan && // кредиты нельзя использовать для зачисления (кредит - это долг)
-                (a.type != AccountType.deposit ||
-                    (a.allowDeposit ??
-                        true)) // вклады только если разрешено пополнение
-            )
+        .where(
+          (a) =>
+              a.type !=
+                  AccountType
+                      .loan && // кредиты нельзя использовать для зачисления (кредит - это долг)
+              (a.type != AccountType.deposit ||
+                  (a.allowDeposit ??
+                      true)), // вклады только если разрешено пополнение
+        )
         .toList();
   }
 
@@ -1700,8 +1854,9 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
     final selectedFromId = _selectedFromAccount?.id;
 
     // Фильтруем счета для списания (from) - исключаем кредиты
-    List<Account> fromAccounts =
-        _accounts.where((a) => a.type != AccountType.loan).toList();
+    List<Account> fromAccounts = _accounts
+        .where((a) => a.type != AccountType.loan)
+        .toList();
 
     // Фильтруем счета для зачисления (to)
     List<Account> toAccounts = _accounts;
@@ -1713,8 +1868,9 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
 
     // Если выбран счет "кредит" для зачисления, исключаем "долг мне" из списка списания
     if (_selectedToAccount?.type == AccountType.loan) {
-      fromAccounts =
-          _accounts.where((a) => a.type != AccountType.debtOwed).toList();
+      fromAccounts = _accounts
+          .where((a) => a.type != AccountType.debtOwed)
+          .toList();
     }
 
     return Column(
@@ -1726,8 +1882,10 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
             icon: const Icon(Icons.add, color: Colors.white),
             label: const Text(
               'Добавить новый счет',
-              style:
-                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             style: ElevatedButton.styleFrom(
               backgroundColor: colorScheme.primary,
@@ -1739,29 +1897,37 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
           child: ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              const Text('Списать с:',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              const Text(
+                'Списать с:',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: 8),
-              ...fromAccounts.map((account) => _buildAccountTile(
-                    account,
-                    isSelected: _selectedFromAccount?.id == account.id,
-                    onTap: () {
-                      setState(() {
-                        _selectedFromAccount = account;
-                        // При смене счета списания сбрасываем выбранный счет зачисления
-                        _selectedToAccount = null;
-                      });
-                    },
-                  )),
+              ...fromAccounts.map(
+                (account) => _buildAccountTile(
+                  account,
+                  isSelected: _selectedFromAccount?.id == account.id,
+                  onTap: () {
+                    setState(() {
+                      _selectedFromAccount = account;
+                      // При смене счета списания сбрасываем выбранный счет зачисления
+                      _selectedToAccount = null;
+                    });
+                  },
+                ),
+              ),
               const SizedBox(height: 24),
-              const Text('Перевести на:',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              const Text(
+                'Перевести на:',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: 8),
-              ...toAccounts.map((account) => _buildAccountTile(
-                    account,
-                    isSelected: _selectedToAccount?.id == account.id,
-                    onTap: () => setState(() => _selectedToAccount = account),
-                  )),
+              ...toAccounts.map(
+                (account) => _buildAccountTile(
+                  account,
+                  isSelected: _selectedToAccount?.id == account.id,
+                  onTap: () => setState(() => _selectedToAccount = account),
+                ),
+              ),
             ],
           ),
         ),
@@ -1769,8 +1935,11 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
     );
   }
 
-  Widget _buildAccountTile(Account account,
-      {required bool isSelected, required VoidCallback onTap}) {
+  Widget _buildAccountTile(
+    Account account, {
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
@@ -1787,18 +1956,21 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
         subtitle: Text(
           '${account.balance.toStringAsFixed(2)} ${account.currency} • ${account.type.displayName}',
           style: TextStyle(
-              color: account.balance >= 0 ? Colors.green : Colors.red),
+            color: account.balance >= 0 ? Colors.green : Colors.red,
+          ),
         ),
-        trailing:
-            isSelected ? Icon(Icons.check_circle, color: Colors.green) : null,
+        trailing: isSelected
+            ? Icon(Icons.check_circle, color: Colors.green)
+            : null,
         onTap: onTap,
       ),
     );
   }
 
   Widget _buildTransactionDetails(double bottomPadding) {
-    final color =
-        _currentTab == TransactionTab.expense ? Colors.red : Colors.green;
+    final color = _currentTab == TransactionTab.expense
+        ? Colors.red
+        : Colors.green;
     final colorScheme = Theme.of(context).colorScheme;
 
     if (_selectedCategory == null) {
@@ -1894,14 +2066,16 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                   ),
                 ),
                 const SizedBox(height: 20),
-                const Text('Сумма',
-                    style:
-                        TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                const Text(
+                  'Сумма',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
                 const SizedBox(height: 8),
                 Container(
                   decoration: BoxDecoration(
-                    border:
-                        Border.all(color: colorScheme.primary.withOpacity(0.3)),
+                    border: Border.all(
+                      color: colorScheme.primary.withOpacity(0.3),
+                    ),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: TextField(
@@ -1916,7 +2090,9 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 16),
+                        horizontal: 16,
+                        vertical: 16,
+                      ),
                       hintText: '0',
                     ),
                   ),
@@ -1927,8 +2103,9 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                   decoration: BoxDecoration(
                     color: colorScheme.primary.withOpacity(0.05),
                     borderRadius: BorderRadius.circular(16),
-                    border:
-                        Border.all(color: colorScheme.primary.withOpacity(0.2)),
+                    border: Border.all(
+                      color: colorScheme.primary.withOpacity(0.2),
+                    ),
                   ),
                   child: Column(
                     children: [
@@ -1990,7 +2167,9 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                         },
                         child: Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 16),
+                            horizontal: 16,
+                            vertical: 16,
+                          ),
                           decoration: BoxDecoration(
                             border: Border.all(color: Colors.grey.shade300),
                             borderRadius: BorderRadius.circular(12),
@@ -1998,8 +2177,11 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.calendar_today,
-                                  color: colorScheme.primary, size: 20),
+                              Icon(
+                                Icons.calendar_today,
+                                color: colorScheme.primary,
+                                size: 20,
+                              ),
                               const SizedBox(width: 8),
                               Text(
                                 DateFormat('dd.MM.yyyy').format(_selectedDate),
@@ -2013,9 +2195,10 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                   ],
                 ),
                 const SizedBox(height: 20),
-                const Text('Счет',
-                    style:
-                        TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                const Text(
+                  'Счет',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
                 const SizedBox(height: 8),
                 Container(
                   decoration: BoxDecoration(
@@ -2026,98 +2209,117 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                     value: _selectedAccount?.id,
                     isExpanded: true,
                     items: _accounts
-                        .where((a) =>
-                            a.type != AccountType.loan &&
-                            (a.type != AccountType.deposit ||
-                                (_currentTab == TransactionTab.income
-                                    ? (a.allowDeposit ?? true)
-                                    : (a.allowWithdraw ?? true))))
-                        .map((account) => DropdownMenuItem<String>(
-                              value: account.id,
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 32,
-                                    height: 32,
-                                    decoration: BoxDecoration(
-                                      color: account.color.withOpacity(0.2),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: Icon(account.icon,
-                                        color: account.color, size: 18),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Text(
-                                      account.name,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                  if (account.type == AccountType.deposit) ...[
-                                    const SizedBox(width: 8),
-                                    Icon(Icons.info_outline,
-                                        size: 14, color: Colors.grey),
-                                  ],
-                                ],
-                              ),
-                            ))
-                        .toList(),
-                    onChanged: (value) {
-                      final selectedAccount =
-                          _accounts.firstWhere((a) => a.id == value);
-                      setState(() => _selectedAccount = selectedAccount);
-                    },
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                    ),
-                    selectedItemBuilder: (context) {
-                      return _accounts
-                          .where((a) =>
+                        .where(
+                          (a) =>
                               a.type != AccountType.loan &&
                               (a.type != AccountType.deposit ||
                                   (_currentTab == TransactionTab.income
                                       ? (a.allowDeposit ?? true)
-                                      : (a.allowWithdraw ?? true))))
-                          .map((account) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 28,
-                                height: 28,
-                                decoration: BoxDecoration(
-                                  color: account.color.withOpacity(0.2),
-                                  shape: BoxShape.circle,
+                                      : (a.allowWithdraw ?? true))),
+                        )
+                        .map(
+                          (account) => DropdownMenuItem<String>(
+                            value: account.id,
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 32,
+                                  height: 32,
+                                  decoration: BoxDecoration(
+                                    color: account.color.withOpacity(0.2),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    account.icon,
+                                    color: account.color,
+                                    size: 18,
+                                  ),
                                 ),
-                                child: Icon(account.icon,
-                                    color: account.color, size: 16),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  account.name,
-                                  style: const TextStyle(fontSize: 14),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    account.name,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                '${account.balance.toStringAsFixed(0)} ${account.currency}',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: account.balance >= 0
-                                      ? Colors.green
-                                      : Colors.red,
-                                ),
-                                maxLines: 1,
-                              ),
-                            ],
+                                if (account.type == AccountType.deposit) ...[
+                                  const SizedBox(width: 8),
+                                  Icon(
+                                    Icons.info_outline,
+                                    size: 14,
+                                    color: Colors.grey,
+                                  ),
+                                ],
+                              ],
+                            ),
                           ),
-                        );
-                      }).toList();
+                        )
+                        .toList(),
+                    onChanged: (value) {
+                      final selectedAccount = _accounts.firstWhere(
+                        (a) => a.id == value,
+                      );
+                      setState(() => _selectedAccount = selectedAccount);
+                    },
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 4,
+                      ),
+                    ),
+                    selectedItemBuilder: (context) {
+                      return _accounts
+                          .where(
+                            (a) =>
+                                a.type != AccountType.loan &&
+                                (a.type != AccountType.deposit ||
+                                    (_currentTab == TransactionTab.income
+                                        ? (a.allowDeposit ?? true)
+                                        : (a.allowWithdraw ?? true))),
+                          )
+                          .map((account) {
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 4),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 28,
+                                    height: 28,
+                                    decoration: BoxDecoration(
+                                      color: account.color.withOpacity(0.2),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Icon(
+                                      account.icon,
+                                      color: account.color,
+                                      size: 16,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      account.name,
+                                      style: const TextStyle(fontSize: 14),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  Text(
+                                    '${account.balance.toStringAsFixed(0)} ${account.currency}',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: account.balance >= 0
+                                          ? Colors.green
+                                          : Colors.red,
+                                    ),
+                                    maxLines: 1,
+                                  ),
+                                ],
+                              ),
+                            );
+                          })
+                          .toList();
                     },
                   ),
                 ),
@@ -2133,7 +2335,8 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                       side: BorderSide(
-                          color: colorScheme.primary.withOpacity(0.3)),
+                        color: colorScheme.primary.withOpacity(0.3),
+                      ),
                     ),
                   ),
                 ),
@@ -2153,13 +2356,17 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                       },
                       activeColor: color,
                     ),
-                    const Text('Регулярный платеж',
-                        style: TextStyle(fontSize: 16)),
+                    const Text(
+                      'Регулярный платеж',
+                      style: TextStyle(fontSize: 16),
+                    ),
                     if (_isRecurring) ...[
                       const SizedBox(width: 8),
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: color.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(8),
@@ -2173,9 +2380,10 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                   ],
                 ),
                 const SizedBox(height: 20),
-                const Text('Комментарий',
-                    style:
-                        TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                const Text(
+                  'Комментарий',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
                 const SizedBox(height: 8),
                 TextField(
                   controller: _commentController,
@@ -2275,8 +2483,11 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                                   style: const TextStyle(fontSize: 16),
                                 ),
                               ),
-                              const Icon(Icons.edit,
-                                  size: 18, color: Colors.blue),
+                              const Icon(
+                                Icons.edit,
+                                size: 18,
+                                color: Colors.blue,
+                              ),
                             ],
                           ),
                         ),
@@ -2301,8 +2512,11 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                                   style: const TextStyle(fontSize: 16),
                                 ),
                               ),
-                              const Icon(Icons.edit,
-                                  size: 18, color: Colors.blue),
+                              const Icon(
+                                Icons.edit,
+                                size: 18,
+                                color: Colors.blue,
+                              ),
                             ],
                           ),
                         ),
@@ -2323,14 +2537,18 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.warning_amber,
-                            color: Colors.orange.shade800),
+                        Icon(
+                          Icons.warning_amber,
+                          color: Colors.orange.shade800,
+                        ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
                             'Внимание! Платёж по кредиту нельзя будет отредактировать или удалить. Пожалуйста, проверьте сумму перед подтверждением.',
                             style: TextStyle(
-                                color: Colors.orange.shade900, fontSize: 12),
+                              color: Colors.orange.shade900,
+                              fontSize: 12,
+                            ),
                           ),
                         ),
                       ],
@@ -2339,14 +2557,16 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
 
                 const SizedBox(height: 20),
 
-                const Text('Сумма',
-                    style:
-                        TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                const Text(
+                  'Сумма',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
                 const SizedBox(height: 8),
                 Container(
                   decoration: BoxDecoration(
-                    border:
-                        Border.all(color: colorScheme.primary.withOpacity(0.3)),
+                    border: Border.all(
+                      color: colorScheme.primary.withOpacity(0.3),
+                    ),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: TextField(
@@ -2372,8 +2592,10 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                     textAlign: TextAlign.center,
                     decoration: const InputDecoration(
                       border: InputBorder.none,
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 16,
+                      ),
                       hintText: '0',
                     ),
                   ),
@@ -2386,38 +2608,47 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                   decoration: BoxDecoration(
                     color: colorScheme.primary.withOpacity(0.05),
                     borderRadius: BorderRadius.circular(16),
-                    border:
-                        Border.all(color: colorScheme.primary.withOpacity(0.2)),
+                    border: Border.all(
+                      color: colorScheme.primary.withOpacity(0.2),
+                    ),
                   ),
                   child: Column(
                     children: [
-                      Row(children: [
-                        _buildCalcButton('1', colorScheme),
-                        _buildCalcButton('2', colorScheme),
-                        _buildCalcButton('3', colorScheme),
-                        _buildCalcButton('⌫', colorScheme, isSpecial: true),
-                      ]),
+                      Row(
+                        children: [
+                          _buildCalcButton('1', colorScheme),
+                          _buildCalcButton('2', colorScheme),
+                          _buildCalcButton('3', colorScheme),
+                          _buildCalcButton('⌫', colorScheme, isSpecial: true),
+                        ],
+                      ),
                       const SizedBox(height: 8),
-                      Row(children: [
-                        _buildCalcButton('4', colorScheme),
-                        _buildCalcButton('5', colorScheme),
-                        _buildCalcButton('6', colorScheme),
-                        _buildCalcButton('+', colorScheme, isSpecial: true),
-                      ]),
+                      Row(
+                        children: [
+                          _buildCalcButton('4', colorScheme),
+                          _buildCalcButton('5', colorScheme),
+                          _buildCalcButton('6', colorScheme),
+                          _buildCalcButton('+', colorScheme, isSpecial: true),
+                        ],
+                      ),
                       const SizedBox(height: 8),
-                      Row(children: [
-                        _buildCalcButton('7', colorScheme),
-                        _buildCalcButton('8', colorScheme),
-                        _buildCalcButton('9', colorScheme),
-                        _buildCalcButton('-', colorScheme, isSpecial: true),
-                      ]),
+                      Row(
+                        children: [
+                          _buildCalcButton('7', colorScheme),
+                          _buildCalcButton('8', colorScheme),
+                          _buildCalcButton('9', colorScheme),
+                          _buildCalcButton('-', colorScheme, isSpecial: true),
+                        ],
+                      ),
                       const SizedBox(height: 8),
-                      Row(children: [
-                        _buildCalcButton(',', colorScheme, isSpecial: true),
-                        _buildCalcButton('0', colorScheme),
-                        _buildCalcButton('C', colorScheme, isSpecial: true),
-                        _buildCalcButton('=', colorScheme, isSpecial: true),
-                      ]),
+                      Row(
+                        children: [
+                          _buildCalcButton(',', colorScheme, isSpecial: true),
+                          _buildCalcButton('0', colorScheme),
+                          _buildCalcButton('C', colorScheme, isSpecial: true),
+                          _buildCalcButton('=', colorScheme, isSpecial: true),
+                        ],
+                      ),
                     ],
                   ),
                 ),
@@ -2443,7 +2674,9 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                         },
                         child: Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 16),
+                            horizontal: 16,
+                            vertical: 16,
+                          ),
                           decoration: BoxDecoration(
                             border: Border.all(color: Colors.grey.shade300),
                             borderRadius: BorderRadius.circular(12),
@@ -2451,8 +2684,11 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.calendar_today,
-                                  color: colorScheme.primary, size: 20),
+                              Icon(
+                                Icons.calendar_today,
+                                color: colorScheme.primary,
+                                size: 20,
+                              ),
                               const SizedBox(width: 8),
                               Text(
                                 DateFormat('dd.MM.yyyy').format(_selectedDate),
@@ -2483,21 +2719,27 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                       },
                       activeColor: Colors.blue,
                     ),
-                    const Text('Регулярный платеж',
-                        style: TextStyle(fontSize: 16)),
+                    const Text(
+                      'Регулярный платеж',
+                      style: TextStyle(fontSize: 16),
+                    ),
                     if (_isRecurring) ...[
                       const SizedBox(width: 8),
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.blue.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
                           'Каждые $_recurringInterval ${_getFrequencyText()}',
-                          style:
-                              const TextStyle(fontSize: 12, color: Colors.blue),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.blue,
+                          ),
                         ),
                       ),
                     ],
@@ -2506,9 +2748,10 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
 
                 const SizedBox(height: 20),
 
-                const Text('Комментарий',
-                    style:
-                        TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                const Text(
+                  'Комментарий',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
                 const SizedBox(height: 8),
                 TextField(
                   controller: _commentController,
@@ -2611,7 +2854,8 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
           double result = 0;
           if (_operation == '+')
             result = _firstNumber + secondNumber;
-          else if (_operation == '-') result = _firstNumber - secondNumber;
+          else if (_operation == '-')
+            result = _firstNumber - secondNumber;
           _amount = result.toString();
           _operation = '';
           _waitingForSecondNumber = false;
@@ -2629,8 +2873,11 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
     });
   }
 
-  Widget _buildCalcButton(String text, ColorScheme colorScheme,
-      {bool isSpecial = false}) {
+  Widget _buildCalcButton(
+    String text,
+    ColorScheme colorScheme, {
+    bool isSpecial = false,
+  }) {
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.all(4),
@@ -2663,7 +2910,9 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
 
   bool _isSaving = false;
   Future<void> _recalculateLoanAfterPayment(
-      Account loan, double paymentAmount) async {
+    Account loan,
+    double paymentAmount,
+  ) async {
     print('🔄 Перерасчет кредита ${loan.name}');
     print('   - Платеж: $paymentAmount');
     print('   - Текущий остаток: ${loan.balance}');
@@ -2683,7 +2932,8 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
       final remainingMonths = (newRemainingDebt / monthlyPayment).ceil();
       loan.remainingMonths = remainingMonths;
       print(
-          '   - Новый остаток: ${loan.balance}, оставшихся месяцев: $remainingMonths');
+        '   - Новый остаток: ${loan.balance}, оставшихся месяцев: $remainingMonths',
+      );
     }
 
     // 4. Сохраняем обновленный кредит
@@ -2697,7 +2947,9 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
   }
 
   Future<void> _recalculateDebtAfterPayment(
-      Account debt, double paymentAmount) async {
+    Account debt,
+    double paymentAmount,
+  ) async {
     print('🔄 Перерасчет долга ${debt.name}');
 
     double currentDebt = debt.balance.abs();
@@ -2830,8 +3082,10 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
         }
 
         if (_selectedFromAccount!.balance < amount) {
-          SnackbarUtils.showError(context,
-              'Недостаточно средств на счете ${_selectedFromAccount!.name}');
+          SnackbarUtils.showError(
+            context,
+            'Недостаточно средств на счете ${_selectedFromAccount!.name}',
+          );
           _isSaving = false;
           return;
         }
@@ -2966,11 +3220,13 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
 
     final allTransactions = await TransactionService.loadTransactions();
     final monthExpenses = allTransactions
-        .where((t) =>
-            t.type == TransactionType.expense &&
-            t.category == transaction.category &&
-            t.date.isAfter(startOfMonth.subtract(const Duration(days: 1))) &&
-            t.date.isBefore(endOfMonth.add(const Duration(days: 1))))
+        .where(
+          (t) =>
+              t.type == TransactionType.expense &&
+              t.category == transaction.category &&
+              t.date.isAfter(startOfMonth.subtract(const Duration(days: 1))) &&
+              t.date.isBefore(endOfMonth.add(const Duration(days: 1))),
+        )
         .toList();
 
     final totalSpent = monthExpenses.fold(0.0, (sum, t) => sum + t.amount);
@@ -2978,8 +3234,10 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
     // Проверяем, превышен ли бюджет
     if (totalSpent > categoryBudget) {
       // Сохраняем уведомление
-      final notificationProvider =
-          Provider.of<NotificationProvider>(context, listen: false);
+      final notificationProvider = Provider.of<NotificationProvider>(
+        context,
+        listen: false,
+      );
 
       final notification = BudgetNotification(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -3126,7 +3384,9 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                                   Text(
                                     'Накоплено: ${goal.currentAmount.toStringAsFixed(2)} ₽ / ${goal.targetAmount.toStringAsFixed(2)} ₽',
                                     style: TextStyle(
-                                        fontSize: 10, color: Colors.grey),
+                                      fontSize: 10,
+                                      color: Colors.grey,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -3201,7 +3461,9 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                             Text(
                               'Цель: ${_formatAmount(goal.targetAmount)}',
                               style: TextStyle(
-                                  fontSize: 12, color: Colors.grey.shade600),
+                                fontSize: 12,
+                                color: Colors.grey.shade600,
+                              ),
                             ),
                             Text(
                               'Накоплено: ${_formatAmount(goal.currentAmount)}',
@@ -3214,14 +3476,16 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                   ),
                 ),
                 const SizedBox(height: 20),
-                const Text('Сумма',
-                    style:
-                        TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                const Text(
+                  'Сумма',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
                 const SizedBox(height: 8),
                 Container(
                   decoration: BoxDecoration(
-                    border:
-                        Border.all(color: colorScheme.primary.withOpacity(0.3)),
+                    border: Border.all(
+                      color: colorScheme.primary.withOpacity(0.3),
+                    ),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: TextField(
@@ -3235,8 +3499,10 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                     textAlign: TextAlign.center,
                     decoration: const InputDecoration(
                       border: InputBorder.none,
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 16,
+                      ),
                       hintText: '0',
                     ),
                   ),
@@ -3247,45 +3513,55 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                   decoration: BoxDecoration(
                     color: colorScheme.primary.withOpacity(0.05),
                     borderRadius: BorderRadius.circular(16),
-                    border:
-                        Border.all(color: colorScheme.primary.withOpacity(0.2)),
+                    border: Border.all(
+                      color: colorScheme.primary.withOpacity(0.2),
+                    ),
                   ),
                   child: Column(
                     children: [
-                      Row(children: [
-                        _buildCalcButton('1', colorScheme),
-                        _buildCalcButton('2', colorScheme),
-                        _buildCalcButton('3', colorScheme),
-                        _buildCalcButton('⌫', colorScheme, isSpecial: true),
-                      ]),
+                      Row(
+                        children: [
+                          _buildCalcButton('1', colorScheme),
+                          _buildCalcButton('2', colorScheme),
+                          _buildCalcButton('3', colorScheme),
+                          _buildCalcButton('⌫', colorScheme, isSpecial: true),
+                        ],
+                      ),
                       const SizedBox(height: 8),
-                      Row(children: [
-                        _buildCalcButton('4', colorScheme),
-                        _buildCalcButton('5', colorScheme),
-                        _buildCalcButton('6', colorScheme),
-                        _buildCalcButton('+', colorScheme, isSpecial: true),
-                      ]),
+                      Row(
+                        children: [
+                          _buildCalcButton('4', colorScheme),
+                          _buildCalcButton('5', colorScheme),
+                          _buildCalcButton('6', colorScheme),
+                          _buildCalcButton('+', colorScheme, isSpecial: true),
+                        ],
+                      ),
                       const SizedBox(height: 8),
-                      Row(children: [
-                        _buildCalcButton('7', colorScheme),
-                        _buildCalcButton('8', colorScheme),
-                        _buildCalcButton('9', colorScheme),
-                        _buildCalcButton('-', colorScheme, isSpecial: true),
-                      ]),
+                      Row(
+                        children: [
+                          _buildCalcButton('7', colorScheme),
+                          _buildCalcButton('8', colorScheme),
+                          _buildCalcButton('9', colorScheme),
+                          _buildCalcButton('-', colorScheme, isSpecial: true),
+                        ],
+                      ),
                       const SizedBox(height: 8),
-                      Row(children: [
-                        _buildCalcButton(',', colorScheme, isSpecial: true),
-                        _buildCalcButton('0', colorScheme),
-                        _buildCalcButton('C', colorScheme, isSpecial: true),
-                        _buildCalcButton('=', colorScheme, isSpecial: true),
-                      ]),
+                      Row(
+                        children: [
+                          _buildCalcButton(',', colorScheme, isSpecial: true),
+                          _buildCalcButton('0', colorScheme),
+                          _buildCalcButton('C', colorScheme, isSpecial: true),
+                          _buildCalcButton('=', colorScheme, isSpecial: true),
+                        ],
+                      ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 20),
-                const Text('Счет списания',
-                    style:
-                        TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                const Text(
+                  'Счет списания',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
                 const SizedBox(height: 8),
                 DropdownButtonFormField<Account>(
                   value: _selectedAccount,
@@ -3302,8 +3578,11 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                               color: account.color.withOpacity(0.2),
                               shape: BoxShape.circle,
                             ),
-                            child: Icon(account.icon,
-                                color: account.color, size: 18),
+                            child: Icon(
+                              account.icon,
+                              color: account.color,
+                              size: 18,
+                            ),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
@@ -3334,9 +3613,10 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
                   ),
                 ),
                 const SizedBox(height: 20),
-                const Text('Комментарий',
-                    style:
-                        TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                const Text(
+                  'Комментарий',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
                 const SizedBox(height: 8),
                 TextField(
                   controller: _commentController,
@@ -3417,15 +3697,18 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
     }
 
     if (_selectedAccount!.balance < amount) {
-      SnackbarUtils.showError(context,
-          'Недостаточно средств на счете ${_selectedFromAccount!.name}');
+      SnackbarUtils.showError(
+        context,
+        'Недостаточно средств на счете ${_selectedFromAccount!.name}',
+      );
       return;
     }
 
     // Обновляем баланс счета
     final accounts = await CategoryService.loadAccounts();
-    final accountIndex =
-        accounts.indexWhere((a) => a.id == _selectedAccount!.id);
+    final accountIndex = accounts.indexWhere(
+      (a) => a.id == _selectedAccount!.id,
+    );
     if (accountIndex != -1) {
       accounts[accountIndex].balance -= amount;
       await CategoryService.saveAccounts(accounts);
@@ -3456,7 +3739,9 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
     if (mounted) {
       Navigator.pop(context);
       SnackbarUtils.showSuccess(
-          context, 'Цель пополнена на ${_formatAmount(amount)}');
+        context,
+        'Цель пополнена на ${_formatAmount(amount)}',
+      );
     }
   }
 
@@ -3490,8 +3775,8 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
             child: Text(
               _shouldShowCategorySelection()
                   ? (_currentTab == TransactionTab.transfer
-                      ? 'Выберите счета'
-                      : 'Выберите категорию')
+                        ? 'Выберите счета'
+                        : 'Выберите категорию')
                   : 'Детали транзакции',
               style: TextStyle(
                 fontSize: 18,
@@ -3514,11 +3799,11 @@ class _AddTransactionSheetState extends State<AddTransactionSheet>
           Expanded(
             child: _shouldShowCategorySelection()
                 ? (_currentTab == TransactionTab.transfer
-                    ? _buildTransferAccounts()
-                    : _buildCategorySelection())
+                      ? _buildTransferAccounts()
+                      : _buildCategorySelection())
                 : (_currentTab == TransactionTab.transfer
-                    ? _buildTransferDetails(bottomPadding)
-                    : _buildTransactionDetails(bottomPadding)),
+                      ? _buildTransferDetails(bottomPadding)
+                      : _buildTransactionDetails(bottomPadding)),
           ),
           SizedBox(height: bottomPadding),
         ],
@@ -3616,7 +3901,8 @@ class _AddAccountDialogContentState extends State<AddAccountDialogContent> {
         selectedColor = defaultColor;
       });
       print(
-          '🎨 Цвет инициализирован: $defaultColor для типа ${selectedType.displayName}');
+        '🎨 Цвет инициализирован: $defaultColor для типа ${selectedType.displayName}',
+      );
     }
   }
 
@@ -3629,7 +3915,7 @@ class _AddAccountDialogContentState extends State<AddAccountDialogContent> {
         Colors.lightGreen,
         Colors.teal,
         Colors.lime,
-        Colors.greenAccent
+        Colors.greenAccent,
       ],
       AccountType.debitCard: [
         Colors.blue,
@@ -3637,56 +3923,56 @@ class _AddAccountDialogContentState extends State<AddAccountDialogContent> {
         Colors.cyan,
         Colors.indigo,
         Colors.blueAccent,
-        Colors.cyanAccent
+        Colors.cyanAccent,
       ],
       AccountType.creditCard: [
         Colors.red,
         Colors.deepOrange,
         Colors.orange,
         Colors.redAccent,
-        Colors.deepOrangeAccent
+        Colors.deepOrangeAccent,
       ],
       AccountType.deposit: [
         Colors.purple,
         Colors.deepPurple,
         Colors.purpleAccent,
-        Colors.deepPurpleAccent
+        Colors.deepPurpleAccent,
       ],
       AccountType.savings: [
         Colors.teal,
         Colors.cyan,
         Colors.tealAccent,
-        Colors.cyanAccent
+        Colors.cyanAccent,
       ],
       AccountType.loan: [
         Colors.deepOrange,
         Colors.brown,
         Colors.orange,
-        Colors.deepOrangeAccent
+        Colors.deepOrangeAccent,
       ],
       AccountType.investment: [
         Colors.lightGreen,
         Colors.green,
         Colors.lightGreenAccent,
-        Colors.teal
+        Colors.teal,
       ],
       AccountType.debtOwed: [
         Colors.amber,
         Colors.yellow,
         Colors.orangeAccent,
-        Colors.amberAccent
+        Colors.amberAccent,
       ],
       AccountType.debtToPay: [
         Colors.brown,
         Colors.deepOrange,
         Colors.orange,
-        Colors.red
+        Colors.red,
       ],
       AccountType.other: [
         Colors.grey,
         Colors.blueGrey,
         Colors.grey.shade600,
-        Colors.grey.shade500
+        Colors.grey.shade500,
       ],
     };
 
@@ -3787,9 +4073,10 @@ class _AddAccountDialogContentState extends State<AddAccountDialogContent> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Название',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                  const Text(
+                    'Название',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
                   const SizedBox(height: 8),
                   TextField(
                     controller: nameController,
@@ -3801,9 +4088,10 @@ class _AddAccountDialogContentState extends State<AddAccountDialogContent> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  const Text('Тип счета',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                  const Text(
+                    'Тип счета',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
                   const SizedBox(height: 8),
                   DropdownButtonFormField<AccountType>(
                     value: selectedType,
@@ -3818,8 +4106,9 @@ class _AddAccountDialogContentState extends State<AddAccountDialogContent> {
                         selectedType = value!;
                         selectedIcon = value.defaultIcon;
                       });
-                      final newColor =
-                          await _getAvailableColorForAccountType(selectedType);
+                      final newColor = await _getAvailableColorForAccountType(
+                        selectedType,
+                      );
                       if (mounted && selectedColor != newColor) {
                         setState(() {
                           selectedColor = newColor;
@@ -3833,9 +4122,10 @@ class _AddAccountDialogContentState extends State<AddAccountDialogContent> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  const Text('Начальный баланс',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                  const Text(
+                    'Начальный баланс',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
                   const SizedBox(height: 8),
                   TextField(
                     controller: balanceController,
@@ -3849,9 +4139,10 @@ class _AddAccountDialogContentState extends State<AddAccountDialogContent> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  const Text('Цвет',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                  const Text(
+                    'Цвет',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
                   const SizedBox(height: 8),
                   SizedBox(
                     height: 50,
