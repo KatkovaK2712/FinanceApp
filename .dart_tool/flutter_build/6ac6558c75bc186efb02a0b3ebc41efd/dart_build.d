@@ -1,0 +1,1 @@
+ C:\\finance_app_clean\\.dart_tool\\flutter_build\\6ac6558c75bc186efb02a0b3ebc41efd\\dart_build_result.json:  C:\\finance_app_clean\\.dart_tool\\package_config.json C:\\finance_app_clean\\pubspec.yaml C:\\flutter_sdk\\bin\\cache\\dart-sdk\\version c:\\finance_app_clean\\.dart_tool\\package_config.json

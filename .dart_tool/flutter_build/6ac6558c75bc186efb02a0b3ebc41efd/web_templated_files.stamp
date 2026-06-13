@@ -1,0 +1,1 @@
+{"inputs":["C:\\finance_app_clean\\web\\*\\index.html","C:\\finance_app_clean\\web\\flutter_bootstrap.js","C:\\flutter_sdk\\bin\\cache\\engine.stamp"],"outputs":["C:\\finance_app_clean\\build\\web\\*\\index.html","C:\\finance_app_clean\\build\\web\\flutter_bootstrap.js"],"buildKey":"[{\"compileTarget\":\"dart2js\",\"renderer\":\"canvaskit\",\"mainJsPath\":\"main.dart.js\"},{}]"}
