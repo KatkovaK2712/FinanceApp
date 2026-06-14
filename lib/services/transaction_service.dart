@@ -264,6 +264,7 @@ class TransactionService {
     }
 
     await CategoryService.saveAccounts(accounts);
+    CategoryService.notifyAccountsListeners(); // ← ДОБАВИТЬ
     await GoalService.syncGoalsWithAccounts();
     print('✅ Балансы сохранены');
   }

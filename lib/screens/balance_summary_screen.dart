@@ -236,8 +236,11 @@ class _BalanceSummaryScreenState extends State<BalanceSummaryScreen> {
   }
 
   String _formatAmount(double amount) {
-    final formatter = NumberFormat('#,##0.00', 'ru_RU');
-    return '${formatter.format(amount)} ₽';
+    final formatted = amount.toStringAsFixed(2);
+    final parts = formatted.split('.');
+    final integerPart =
+        NumberFormat('#,##0', 'ru_RU').format(int.parse(parts[0]));
+    return '$integerPart.${parts[1]} ₽';
   }
 
   String _getMonthName(int month, int year) {

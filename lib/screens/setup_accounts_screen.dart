@@ -6,6 +6,7 @@ import '../utils/amount_formatter.dart';
 import '../models/models.dart';
 import 'setup_goals_screen.dart';
 import '../utils/snackbar_utils.dart';
+import 'package:intl/intl.dart';
 
 const List<Color> availableColors = [
   Colors.red,
@@ -185,6 +186,11 @@ class _SetupAccountsScreenState extends State<SetupAccountsScreen> {
         builder: (context) => SetupGoalsScreen(isFromRegistration: true),
       ),
     );
+  }
+
+  String _formatBalance(double balance) {
+    final formatter = NumberFormat('#,##0.00', 'ru_RU');
+    return formatter.format(balance);
   }
 
   @override
@@ -422,7 +428,7 @@ class _SetupAccountsScreenState extends State<SetupAccountsScreen> {
                                                 ),
                                               ),
                                               Text(
-                                                'Баланс: ${AmountFormatter.formatNumber(account.balance)} ${account.currency}',
+                                                'Баланс: ${_formatBalance(account.balance)} ${account.currency}',
                                                 style: TextStyle(
                                                   fontSize: 14,
                                                   fontWeight: FontWeight.w500,
