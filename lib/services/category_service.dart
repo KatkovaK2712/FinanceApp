@@ -7,7 +7,7 @@ import 'api_service.dart'; // 👈 ДОБАВИТЬ
 class CategoryService {
   static final List<VoidCallback> _listeners = [];
   static final List<VoidCallback> _accountsListeners = [];
-
+  static final List<VoidCallback> _transactionListeners = [];
   // ✅ ИСПОЛЬЗУЕМ ApiService.currentUserId
   static String? get _userId => ApiService.currentUserId;
 
@@ -30,6 +30,20 @@ class CategoryService {
 
   static void notifyListeners() {
     for (var listener in _listeners) {
+      listener();
+    }
+  }
+
+  static void addTransactionListener(VoidCallback listener) {
+    _transactionListeners.add(listener);
+  }
+
+  static void removeTransactionListener(VoidCallback listener) {
+    _transactionListeners.remove(listener);
+  }
+
+  static void notifyTransactionListeners() {
+    for (var listener in _transactionListeners) {
       listener();
     }
   }

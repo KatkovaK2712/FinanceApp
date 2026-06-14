@@ -68,7 +68,8 @@ class _HomeScreenState extends State<HomeScreen>
     });
     _loadGoals();
     CategoryService.addAccountsListener(_onAccountsChanged);
-    CategoryService.addListener(_onTransactionsChanged);
+    CategoryService.addListener(
+        _onTransactionsChanged); // ← ЭТА СТРОЧКА УЖЕ ЕСТЬ
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       Provider.of<AvatarProvider>(context, listen: false).loadAvatar();

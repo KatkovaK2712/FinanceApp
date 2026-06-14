@@ -5,6 +5,7 @@ import '../services/category_service.dart';
 import '../models/models.dart';
 import '../providers/settings_provider.dart';
 import '../utils/snackbar_utils.dart';
+import 'package:intl/intl.dart';
 
 class HomeSettingsScreen extends StatefulWidget {
   const HomeSettingsScreen({super.key});
@@ -23,6 +24,10 @@ class _HomeSettingsScreenState extends State<HomeSettingsScreen> {
   void initState() {
     super.initState();
     _loadAccounts();
+  }
+
+  String _formatBalance(double balance) {
+    return NumberFormat('#,##0.00', 'ru_RU').format(balance);
   }
 
   Future<void> _loadAccounts() async {
@@ -171,7 +176,7 @@ class _HomeSettingsScreenState extends State<HomeSettingsScreen> {
                                     ),
                                   ),
                                   Text(
-                                    '${account.balance.toStringAsFixed(0)} ${account.currency}',
+                                    '${_formatBalance(account.balance)} ${account.currency}',
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w500,

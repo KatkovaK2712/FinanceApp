@@ -267,5 +267,20 @@ class TransactionService {
     CategoryService.notifyAccountsListeners(); // ← ДОБАВИТЬ
     await GoalService.syncGoalsWithAccounts();
     print('✅ Балансы сохранены');
+    final transactions = await loadTransactions();
+    final exists = transactions.any((t) => t.id == transaction.id);
+    if (exists) {
+      print('⚠️ Транзакция с id ${transaction.id} уже существует, пропускаем');
+      return;
+    }
+    transactions.add(transaction);
+    await saveTransactions(transactions);
+    await _updateAccountBalance(transaction);
+    await GoalService.syncGoalsWithAccounts();
+
+    // ✅ Уведомляем об изменениях (для мгновного обновления UI)
+    CategoryService.notifyListeners(); // для обновления статистики
+    CategoryService
+        .notifyTransactionListeners(); // для обновления списка транзакций
   }
 }

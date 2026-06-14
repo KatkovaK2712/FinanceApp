@@ -162,7 +162,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   String _formatAmount(double amount) {
-    final formatter = NumberFormat('#,##0', 'ru_RU');
+    final formatter = NumberFormat('#,##0.00', 'ru_RU');
     return formatter.format(amount);
   }
 
