@@ -21,7 +21,7 @@ import 'services/recurring_service.dart';
 import 'providers/notification_provider.dart';
 import 'providers/onboarding_provider.dart';
 import 'services/api_service.dart';
-import 'screens/avatar_selection_screen.dart'; // ← ДОБАВИТЬ
+import 'screens/avatar_selection_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -142,12 +142,8 @@ class MyApp extends StatelessWidget {
               '/settings': (context) => const SettingsScreen(),
               '/profile': (context) => ProfileScreen(),
               '/home_settings': (context) => const HomeSettingsScreen(),
-              '/avatar_selection': (context) => AvatarSelectionScreen(
-                    onAvatarSelected: (avatar) {
-                      Provider.of<AvatarProvider>(context, listen: false)
-                          .loadAvatar();
-                    },
-                  ),
+              '/avatar_selection': (context) =>
+                  AvatarSelectionScreen(onAvatarSelected: (avatar) {}),
             },
           );
         },

@@ -59,18 +59,6 @@ class _RegisterScreenState extends State<RegisterScreen>
       try {
         final email = _emailController.text.trim();
 
-        // ❌ ЗАПРЕЩАЕМ РЕГИСТРАЦИЮ ДЕМО-АККАУНТА
-        if (email == 'test@user.com') {
-          if (mounted) {
-            SnackbarUtils.showError(
-              context,
-              'Этот email зарезервирован для демо-режима',
-            );
-          }
-          setState(() => _isLoading = false);
-          return;
-        }
-
         final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
         // ✅ ЛОКАЛЬНАЯ РЕГИСТРАЦИЯ (без бэкенда)
@@ -134,62 +122,62 @@ class _RegisterScreenState extends State<RegisterScreen>
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                        width: 80,
-                        height: 90,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.purple.withOpacity(0.4),
-                              blurRadius: 20,
-                              spreadRadius: 2,
-                              offset: const Offset(0, 5),
-                            ),
-                          ],
+                    width: 80,
+                    height: 90,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.purple.withOpacity(0.4),
+                          blurRadius: 20,
+                          spreadRadius: 2,
+                          offset: const Offset(0, 5),
                         ),
-                        child: AnimatedBuilder(
-                          animation: _pawController,
-                          builder: (context, child) {
-                            return Transform.rotate(
-                              angle: _pawAnimation.value * 0.02,
-                              child: child,
-                            );
+                      ],
+                    ),
+                    child: AnimatedBuilder(
+                      animation: _pawController,
+                      builder: (context, child) {
+                        return Transform.rotate(
+                          angle: _pawAnimation.value * 0.02,
+                          child: child,
+                        );
+                      },
+                      child: ClipOval(
+                        child: ShaderMask(
+                          shaderCallback: (bounds) {
+                            return LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: const [
+                                Color(0xFF4158D0),
+                                Color(0xFFC850C0),
+                                Color(0xFFFFCC70),
+                              ],
+                              stops: const [0.0, 0.5, 1.0],
+                            ).createShader(bounds);
                           },
-                          child: ClipOval(
-                            child: ShaderMask(
-                              shaderCallback: (bounds) {
-                                return LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: const [
-                                    Color(0xFF4158D0),
-                                    Color(0xFFC850C0),
-                                    Color(0xFFFFCC70),
-                                  ],
-                                  stops: const [0.0, 0.5, 1.0],
-                                ).createShader(bounds);
-                              },
-                              child: Image.asset(
-                                'assets/images/maneki-neko.png',
-                                fit: BoxFit.contain,
-                                color: Colors.white,
-                                colorBlendMode: BlendMode.srcATop,
-                                errorBuilder: (context, error, stackTrace) {
-                                  print('😿 Ошибка загрузки картинки: $error');
-                                  return Container(
-                                    color: Colors.purple.withOpacity(0.2),
-                                    child: Icon(
-                                      Icons.pets,
-                                      size: 70,
-                                      color: Colors.purple,
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
+                          child: Image.asset(
+                            'assets/images/maneki-neko.png',
+                            fit: BoxFit.contain,
+                            color: Colors.white,
+                            colorBlendMode: BlendMode.srcATop,
+                            errorBuilder: (context, error, stackTrace) {
+                              print('😿 Ошибка загрузки картинки: $error');
+                              return Container(
+                                color: Colors.purple.withOpacity(0.2),
+                                child: Icon(
+                                  Icons.pets,
+                                  size: 70,
+                                  color: Colors.purple,
+                                ),
+                              );
+                            },
                           ),
                         ),
-                      )
+                      ),
+                    ),
+                  )
                       .animate()
                       .fadeIn(duration: 800.ms, curve: Curves.easeOut)
                       .scale(

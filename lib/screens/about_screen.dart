@@ -41,6 +41,7 @@ class _AboutScreenState extends State<AboutScreen> {
         }
       }
     } catch (e) {
+      print('❌ Ошибка открытия ссылки: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
