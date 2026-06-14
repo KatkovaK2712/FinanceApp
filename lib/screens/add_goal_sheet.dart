@@ -5,6 +5,7 @@ import '../widgets/custom_date_picker.dart';
 import '../utils/amount_formatter.dart';
 import '../models/models.dart';
 import '../utils/snackbar_utils.dart';
+import 'package:intl/intl.dart';
 
 class AddGoalSheet extends StatefulWidget {
   final Function(Goal) onGoalAdded;
@@ -63,6 +64,10 @@ class _AddGoalSheetState extends State<AddGoalSheet> {
     }
   }
 
+  String _formatAmount(double amount) {
+    return NumberFormat('#,##0.00', 'ru_RU').format(amount);
+  }
+
   void _onAccountsChanged() {
     _loadAccounts();
     // Обновляем текущую сумму, если выбран счёт
@@ -71,8 +76,7 @@ class _AddGoalSheetState extends State<AddGoalSheet> {
         (a) => a.id == _selectedAccountId,
         orElse: () => null as Account,
       );
-      _currentAmountController.text =
-          AmountFormatter.formatNumber(selectedAccount.balance);
+      _currentAmountController.text = _formatAmount(selectedAccount.balance);
     }
   }
 
@@ -87,8 +91,7 @@ class _AddGoalSheetState extends State<AddGoalSheet> {
         (a) => a.id == widget.goalToEdit!.accountId,
         orElse: () => null as Account,
       );
-      _currentAmountController.text =
-          AmountFormatter.formatNumber(selectedAccount.balance);
+      _currentAmountController.text = _formatAmount(selectedAccount.balance);
     } else if (_accounts.isNotEmpty && _selectedAccountId == null) {
       _selectedAccountId = _accounts.first.id; // 👈 ИЗМЕНЕНО
     }

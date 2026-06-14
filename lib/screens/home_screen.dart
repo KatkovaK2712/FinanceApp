@@ -501,6 +501,9 @@ class _HomeScreenState extends State<HomeScreen>
               t.date.month == _selectedMonth.month)
           .toList();
 
+      // ✅ СОРТИРУЕМ ПО ДАТЕ (НОВЫЕ СВЕРХУ)
+      filteredTransactions.sort((a, b) => b.date.compareTo(a.date));
+
       setState(() {
         _transactions = filteredTransactions;
       });
@@ -639,7 +642,16 @@ class _HomeScreenState extends State<HomeScreen>
     }
 
     _allTransactions.add(transaction);
-    _transactions.add(transaction);
+
+    // ✅ ПРОВЕРЯЕМ, относится ли транзакция к текущему месяцу
+    final isCurrentMonth = transaction.date.year == _selectedMonth.year &&
+        transaction.date.month == _selectedMonth.month;
+
+    if (isCurrentMonth) {
+      _transactions.add(transaction);
+      // Сортируем транзакции по дате (новые сверху)
+      _transactions.sort((a, b) => b.date.compareTo(a.date));
+    }
 
     await _saveTransactions();
     await _loadGoals();
@@ -647,10 +659,15 @@ class _HomeScreenState extends State<HomeScreen>
 
     _invalidateBalanceCache();
 
-    await _loadTransactionsForMonth();
-    await _updateBalancesForSelectedMonth();
+    // ✅ ПРИНУДИТЕЛЬНО ОБНОВЛЯЕМ UI
+    setState(() {});
 
-    if (mounted) setState(() {});
+    // Если транзакция не в текущем месяце, всё равно обновляем данные в фоне
+    if (!isCurrentMonth) {
+      await _loadTransactionsForMonth();
+      await _updateBalancesForSelectedMonth();
+      if (mounted) setState(() {});
+    }
   }
 
   void _updateTransaction(Transaction updatedTransaction) async {

@@ -6,6 +6,7 @@ import 'add_goal_sheet.dart';
 import '../models/models.dart';
 import '../utils/amount_formatter.dart';
 import 'setup_categories_screen.dart';
+import 'package:intl/intl.dart';
 
 class SetupGoalsScreen extends StatefulWidget {
   final bool isFromRegistration;
@@ -27,6 +28,10 @@ class _SetupGoalsScreenState extends State<SetupGoalsScreen> {
     super.initState();
     _loadGoals();
     _loadAccounts();
+  }
+
+  String _formatAmount(double amount) {
+    return NumberFormat('#,##0.00', 'ru_RU').format(amount);
   }
 
   Future<void> _loadAccounts() async {
@@ -93,7 +98,7 @@ class _SetupGoalsScreenState extends State<SetupGoalsScreen> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    
+
     // ✅ ВРЕМЕННО: принудительно показываем кнопки для теста
     final showButtons = widget.isFromRegistration;
     return Scaffold(
@@ -108,7 +113,8 @@ class _SetupGoalsScreenState extends State<SetupGoalsScreen> {
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => SetupCategoriesScreen(isFromRegistration: true),
+                    builder: (context) =>
+                        SetupCategoriesScreen(isFromRegistration: true),
                   ),
                 );
               },
@@ -205,11 +211,13 @@ class _SetupGoalsScreenState extends State<SetupGoalsScreen> {
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     IconButton(
-                                      icon: const Icon(Icons.edit, color: Colors.blue),
+                                      icon: const Icon(Icons.edit,
+                                          color: Colors.blue),
                                       onPressed: () => _editGoal(goal),
                                     ),
                                     IconButton(
-                                      icon: const Icon(Icons.delete, color: Colors.red),
+                                      icon: const Icon(Icons.delete,
+                                          color: Colors.red),
                                       onPressed: () {
                                         showDialog(
                                           context: context,
@@ -218,7 +226,8 @@ class _SetupGoalsScreenState extends State<SetupGoalsScreen> {
                                             content: const Text('Вы уверены?'),
                                             actions: [
                                               TextButton(
-                                                onPressed: () => Navigator.pop(context),
+                                                onPressed: () =>
+                                                    Navigator.pop(context),
                                                 child: const Text('Отмена'),
                                               ),
                                               TextButton(
@@ -226,7 +235,9 @@ class _SetupGoalsScreenState extends State<SetupGoalsScreen> {
                                                   _deleteGoal(goal.id);
                                                   Navigator.pop(context);
                                                 },
-                                                style: TextButton.styleFrom(foregroundColor: Colors.red),
+                                                style: TextButton.styleFrom(
+                                                    foregroundColor:
+                                                        Colors.red),
                                                 child: const Text('Удалить'),
                                               ),
                                             ],
@@ -254,7 +265,8 @@ class _SetupGoalsScreenState extends State<SetupGoalsScreen> {
                                     const SizedBox(width: 12),
                                     Expanded(
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             goal.title,
@@ -271,7 +283,8 @@ class _SetupGoalsScreenState extends State<SetupGoalsScreen> {
                                               color: Colors.grey.shade600,
                                             ),
                                           ),
-                                          if (goal.accountId != null && goal.accountId != 'none')
+                                          if (goal.accountId != null &&
+                                              goal.accountId != 'none')
                                             Text(
                                               'Счёт: ${_getAccountName(goal.accountId)}',
                                               style: TextStyle(
@@ -289,17 +302,18 @@ class _SetupGoalsScreenState extends State<SetupGoalsScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
-                                          'Накоплено: ${AmountFormatter.formatNumber(goal.currentAmount)} ₽',
+                                          'Накоплено: ${_formatAmount(goal.currentAmount)}',
                                           style: TextStyle(
                                             fontSize: 13,
                                             color: Colors.grey.shade700,
                                           ),
                                         ),
                                         Text(
-                                          'Цель: ${AmountFormatter.formatNumber(goal.targetAmount)} ₽',
+                                          'Цель: ${_formatAmount(goal.targetAmount)}',
                                           style: TextStyle(
                                             fontSize: 13,
                                             color: Colors.grey.shade700,
@@ -313,7 +327,8 @@ class _SetupGoalsScreenState extends State<SetupGoalsScreen> {
                                       child: LinearProgressIndicator(
                                         value: goal.progress.clamp(0.0, 1.0),
                                         backgroundColor: Colors.grey.shade200,
-                                        valueColor: AlwaysStoppedAnimation<Color>(
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
                                           goal.color,
                                         ),
                                         minHeight: 8,
@@ -365,7 +380,8 @@ class _SetupGoalsScreenState extends State<SetupGoalsScreen> {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => SetupCategoriesScreen(isFromRegistration: true),
+                          builder: (context) =>
+                              SetupCategoriesScreen(isFromRegistration: true),
                         ),
                       );
                     },
@@ -378,7 +394,8 @@ class _SetupGoalsScreenState extends State<SetupGoalsScreen> {
                     ),
                     child: const Text(
                       'Продолжить',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
@@ -390,7 +407,7 @@ class _SetupGoalsScreenState extends State<SetupGoalsScreen> {
 
   String _getAccountName(String? accountId) {
     if (accountId == null || accountId == 'none') return 'Не привязан';
-  
+
     try {
       final account = _accounts.firstWhere((a) => a.id == accountId);
       return account.name;
