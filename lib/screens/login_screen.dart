@@ -6,6 +6,7 @@ import '../services/api_service.dart';
 import '../models/models.dart';
 import '../providers/settings_provider.dart'; // 👈 Добавить эту строку
 import '../utils/snackbar_utils.dart';
+import '../services/demo_data_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -34,9 +35,10 @@ class _LoginScreenState extends State<LoginScreen>
       vsync: this,
     )..repeat(reverse: true);
 
-    _pawAnimation = Tween<double>(begin: -5, end: 5).animate(
-      CurvedAnimation(parent: _pawController, curve: Curves.easeInOut),
-    );
+    _pawAnimation = Tween<double>(
+      begin: -5,
+      end: 5,
+    ).animate(CurvedAnimation(parent: _pawController, curve: Curves.easeInOut));
   }
 
   void _fillTestData() {
@@ -49,11 +51,28 @@ class _LoginScreenState extends State<LoginScreen>
       setState(() => _isLoading = true);
 
       try {
+        final email = _emailController.text.trim();
+        final password = _passwordController.text;
+
+        // ✅ ПРОВЕРКА НА ДЕМО-АККАУНТ
+        if (email == 'test@user.com' && password == '12345678a') {
+          // Включаем демо-режим
+          await DemoDataService.initDemoMode();
+
+          if (mounted) {
+            SnackbarUtils.showSuccess(
+              context,
+              'Добро пожаловать в демо-режим!',
+            );
+            Navigator.pushReplacementNamed(context, '/home');
+          }
+          setState(() => _isLoading = false);
+          return;
+        }
+
+        // Обычный вход через сервер
         final authProvider = Provider.of<AuthProvider>(context, listen: false);
-        final success = await authProvider.login(
-          _emailController.text.trim(),
-          _passwordController.text,
-        );
+        final success = await authProvider.login(email, password);
 
         if (success && mounted) {
           SnackbarUtils.showSuccess(context, 'Добро пожаловать!');
@@ -100,67 +119,65 @@ class _LoginScreenState extends State<LoginScreen>
                 children: [
                   // Манеки Неко с градиентом на самой иконке
                   Container(
-                    width: 85, // Уменьшил размер
-                    height: 100,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.purple.withOpacity(0.4),
-                          blurRadius: 20,
-                          spreadRadius: 2,
-                          offset: const Offset(0, 5),
+                        width: 85, // Уменьшил размер
+                        height: 100,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.purple.withOpacity(0.4),
+                              blurRadius: 20,
+                              spreadRadius: 2,
+                              offset: const Offset(0, 5),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    child: AnimatedBuilder(
-                      animation: _pawController,
-                      builder: (context, child) {
-                        return Transform.rotate(
-                          angle: _pawAnimation.value * 0.02,
-                          child: child,
-                        );
-                      },
-                      child: ClipOval(
-                        child: ShaderMask(
-                          shaderCallback: (bounds) {
-                            return LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: const [
-                                Color(0xFF4158D0), // Синий
-                                Color(0xFFC850C0), // Розово-фиолетовый
-                                Color(0xFFFFCC70), // Желтый для акцента
-                              ],
-                              stops: const [0.0, 0.5, 1.0],
-                            ).createShader(bounds);
+                        child: AnimatedBuilder(
+                          animation: _pawController,
+                          builder: (context, child) {
+                            return Transform.rotate(
+                              angle: _pawAnimation.value * 0.02,
+                              child: child,
+                            );
                           },
-                          child: Image.asset(
-                            'assets/images/maneki-neko.png',
-                            fit: BoxFit.contain,
-                            color: Colors.white, // Базовый цвет для градиента
-                            colorBlendMode: BlendMode.srcATop,
-                            errorBuilder: (context, error, stackTrace) {
-                              print('😿 Ошибка загрузки картинки: $error');
-                              return Container(
-                                color: Colors.purple.withOpacity(0.2),
-                                child: Icon(
-                                  Icons.pets,
-                                  size: 70,
-                                  color: Colors.purple,
-                                ),
-                              );
-                            },
+                          child: ClipOval(
+                            child: ShaderMask(
+                              shaderCallback: (bounds) {
+                                return LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: const [
+                                    Color(0xFF4158D0), // Синий
+                                    Color(0xFFC850C0), // Розово-фиолетовый
+                                    Color(0xFFFFCC70), // Желтый для акцента
+                                  ],
+                                  stops: const [0.0, 0.5, 1.0],
+                                ).createShader(bounds);
+                              },
+                              child: Image.asset(
+                                'assets/images/maneki-neko.png',
+                                fit: BoxFit.contain,
+                                color:
+                                    Colors.white, // Базовый цвет для градиента
+                                colorBlendMode: BlendMode.srcATop,
+                                errorBuilder: (context, error, stackTrace) {
+                                  print('😿 Ошибка загрузки картинки: $error');
+                                  return Container(
+                                    color: Colors.purple.withOpacity(0.2),
+                                    child: Icon(
+                                      Icons.pets,
+                                      size: 70,
+                                      color: Colors.purple,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                  )
-                      .animate()
-                      .fadeIn(
-                        duration: 800.ms,
-                        curve: Curves.easeOut,
                       )
+                      .animate()
+                      .fadeIn(duration: 800.ms, curve: Curves.easeOut)
                       .scale(
                         begin: const Offset(0.8, 0.8),
                         curve: Curves.elasticOut,
@@ -187,9 +204,9 @@ class _LoginScreenState extends State<LoginScreen>
                   Text(
                     '🐾 Лапка удачи в твоих финансах',
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: colorScheme.onSurface.withOpacity(0.7),
-                          fontStyle: FontStyle.italic,
-                        ),
+                      color: colorScheme.onSurface.withOpacity(0.7),
+                      fontStyle: FontStyle.italic,
+                    ),
                   ).animate().fadeIn(delay: 400.ms),
 
                   const SizedBox(height: 40),
@@ -222,41 +239,51 @@ class _LoginScreenState extends State<LoginScreen>
                         child: Column(
                           children: [
                             TextFormField(
-                              controller: _emailController,
-                              decoration: InputDecoration(
-                                labelText: 'Email',
-                                prefixIcon: Icon(Icons.email,
-                                    color: colorScheme.primary),
-                                hintText: 'neko@example.com',
-                              ),
-                              validator: (v) =>
-                                  v?.isEmpty ?? true ? 'Введите email' : null,
-                            )
+                                  controller: _emailController,
+                                  decoration: InputDecoration(
+                                    labelText: 'Email',
+                                    prefixIcon: Icon(
+                                      Icons.email,
+                                      color: colorScheme.primary,
+                                    ),
+                                    hintText: 'neko@example.com',
+                                  ),
+                                  validator: (v) => v?.isEmpty ?? true
+                                      ? 'Введите email'
+                                      : null,
+                                )
                                 .animate()
                                 .fadeIn(delay: 500.ms)
                                 .slideX(begin: 0.2),
                             const SizedBox(height: 20),
                             TextFormField(
-                              controller: _passwordController,
-                              decoration: InputDecoration(
-                                labelText: 'Пароль',
-                                prefixIcon: Icon(Icons.lock,
-                                    color: colorScheme.primary),
-                                suffixIcon: IconButton(
-                                  icon: Icon(
-                                    _obscurePassword
-                                        ? Icons.visibility_off
-                                        : Icons.visibility,
-                                    color: colorScheme.primary.withOpacity(0.7),
+                                  controller: _passwordController,
+                                  decoration: InputDecoration(
+                                    labelText: 'Пароль',
+                                    prefixIcon: Icon(
+                                      Icons.lock,
+                                      color: colorScheme.primary,
+                                    ),
+                                    suffixIcon: IconButton(
+                                      icon: Icon(
+                                        _obscurePassword
+                                            ? Icons.visibility_off
+                                            : Icons.visibility,
+                                        color: colorScheme.primary.withOpacity(
+                                          0.7,
+                                        ),
+                                      ),
+                                      onPressed: () => setState(
+                                        () => _obscurePassword =
+                                            !_obscurePassword,
+                                      ),
+                                    ),
                                   ),
-                                  onPressed: () => setState(() =>
-                                      _obscurePassword = !_obscurePassword),
-                                ),
-                              ),
-                              obscureText: _obscurePassword,
-                              validator: (v) =>
-                                  v?.isEmpty ?? true ? 'Введите пароль' : null,
-                            )
+                                  obscureText: _obscurePassword,
+                                  validator: (v) => v?.isEmpty ?? true
+                                      ? 'Введите пароль'
+                                      : null,
+                                )
                                 .animate()
                                 .fadeIn(delay: 600.ms)
                                 .slideX(begin: 0.2),
@@ -268,7 +295,8 @@ class _LoginScreenState extends State<LoginScreen>
                                 onPressed: _isLoading ? null : _login,
                                 child: _isLoading
                                     ? const CircularProgressIndicator(
-                                        color: Colors.white)
+                                        color: Colors.white,
+                                      )
                                     : Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
@@ -276,12 +304,16 @@ class _LoginScreenState extends State<LoginScreen>
                                           const Text(
                                             'Войти',
                                             style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.bold),
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                           ),
                                           const SizedBox(width: 8),
-                                          Icon(Icons.arrow_forward,
-                                              color: Colors.white, size: 20),
+                                          Icon(
+                                            Icons.arrow_forward,
+                                            color: Colors.white,
+                                            size: 20,
+                                          ),
                                         ],
                                       ),
                               ),
@@ -289,8 +321,11 @@ class _LoginScreenState extends State<LoginScreen>
                             const SizedBox(height: 16),
                             TextButton.icon(
                               onPressed: _fillTestData,
-                              icon: Icon(Icons.bug_report,
-                                  size: 18, color: colorScheme.primary),
+                              icon: Icon(
+                                Icons.bug_report,
+                                size: 18,
+                                color: colorScheme.primary,
+                              ),
                               label: Text(
                                 '🐾 Заполнить тестовые данные',
                                 style: TextStyle(color: colorScheme.primary),
@@ -305,8 +340,9 @@ class _LoginScreenState extends State<LoginScreen>
                                 text: TextSpan(
                                   text: 'Нет аккаунта? ',
                                   style: TextStyle(
-                                    color:
-                                        colorScheme.onSurface.withOpacity(0.7),
+                                    color: colorScheme.onSurface.withOpacity(
+                                      0.7,
+                                    ),
                                   ),
                                   children: [
                                     TextSpan(
@@ -331,17 +367,23 @@ class _LoginScreenState extends State<LoginScreen>
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.favorite,
-                          size: 16,
-                          color: colorScheme.primary.withOpacity(0.3)),
+                      Icon(
+                        Icons.favorite,
+                        size: 16,
+                        color: colorScheme.primary.withOpacity(0.3),
+                      ),
                       const SizedBox(width: 8),
-                      Icon(Icons.pets,
-                          size: 20,
-                          color: colorScheme.primary.withOpacity(0.5)),
+                      Icon(
+                        Icons.pets,
+                        size: 20,
+                        color: colorScheme.primary.withOpacity(0.5),
+                      ),
                       const SizedBox(width: 8),
-                      Icon(Icons.favorite,
-                          size: 16,
-                          color: colorScheme.primary.withOpacity(0.3)),
+                      Icon(
+                        Icons.favorite,
+                        size: 16,
+                        color: colorScheme.primary.withOpacity(0.3),
+                      ),
                     ],
                   ),
                 ],

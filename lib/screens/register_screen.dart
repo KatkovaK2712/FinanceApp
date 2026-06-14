@@ -37,9 +37,10 @@ class _RegisterScreenState extends State<RegisterScreen>
       vsync: this,
     )..repeat(reverse: true);
 
-    _pawAnimation = Tween<double>(begin: -5, end: 5).animate(
-      CurvedAnimation(parent: _pawController, curve: Curves.easeInOut),
-    );
+    _pawAnimation = Tween<double>(
+      begin: -5,
+      end: 5,
+    ).animate(CurvedAnimation(parent: _pawController, curve: Curves.easeInOut));
   }
 
   @override
@@ -56,16 +57,30 @@ class _RegisterScreenState extends State<RegisterScreen>
       setState(() => _isLoading = true);
 
       try {
+        final email = _emailController.text.trim();
+
+        // ❌ ЗАПРЕЩАЕМ РЕГИСТРАЦИЮ ДЕМО-АККАУНТА
+        if (email == 'test@user.com') {
+          if (mounted) {
+            SnackbarUtils.showError(
+              context,
+              'Этот email зарезервирован для демо-режима',
+            );
+          }
+          setState(() => _isLoading = false);
+          return;
+        }
+
         final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
         // ✅ ЛОКАЛЬНАЯ РЕГИСТРАЦИЯ (без бэкенда)
         final success = await authProvider.register(
-          _emailController.text.trim(),
+          email,
           _passwordController.text,
         );
 
         if (success && mounted) {
-          print('✅ Регистрация успешна! Email: ${_emailController.text}');
+          print('✅ Регистрация успешна! Email: $email');
           SnackbarUtils.showSuccess(context, 'Регистрация успешна!');
 
           // Переход на экран выбора метода
@@ -77,13 +92,17 @@ class _RegisterScreenState extends State<RegisterScreen>
           );
         } else {
           SnackbarUtils.showError(
-              context, 'Пользователь с таким email уже существует');
+            context,
+            'Пользователь с таким email уже существует',
+          );
         }
       } catch (e) {
         print('❌ Ошибка регистрации: $e');
         if (mounted) {
           SnackbarUtils.showError(
-              context, 'Ошибка регистрации: ${e.toString()}');
+            context,
+            'Ошибка регистрации: ${e.toString()}',
+          );
         }
       } finally {
         if (mounted) setState(() => _isLoading = false);
@@ -115,67 +134,64 @@ class _RegisterScreenState extends State<RegisterScreen>
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    width: 80,
-                    height: 90,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.purple.withOpacity(0.4),
-                          blurRadius: 20,
-                          spreadRadius: 2,
-                          offset: const Offset(0, 5),
+                        width: 80,
+                        height: 90,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.purple.withOpacity(0.4),
+                              blurRadius: 20,
+                              spreadRadius: 2,
+                              offset: const Offset(0, 5),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    child: AnimatedBuilder(
-                      animation: _pawController,
-                      builder: (context, child) {
-                        return Transform.rotate(
-                          angle: _pawAnimation.value * 0.02,
-                          child: child,
-                        );
-                      },
-                      child: ClipOval(
-                        child: ShaderMask(
-                          shaderCallback: (bounds) {
-                            return LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: const [
-                                Color(0xFF4158D0),
-                                Color(0xFFC850C0),
-                                Color(0xFFFFCC70),
-                              ],
-                              stops: const [0.0, 0.5, 1.0],
-                            ).createShader(bounds);
+                        child: AnimatedBuilder(
+                          animation: _pawController,
+                          builder: (context, child) {
+                            return Transform.rotate(
+                              angle: _pawAnimation.value * 0.02,
+                              child: child,
+                            );
                           },
-                          child: Image.asset(
-                            'assets/images/maneki-neko.png',
-                            fit: BoxFit.contain,
-                            color: Colors.white,
-                            colorBlendMode: BlendMode.srcATop,
-                            errorBuilder: (context, error, stackTrace) {
-                              print('😿 Ошибка загрузки картинки: $error');
-                              return Container(
-                                color: Colors.purple.withOpacity(0.2),
-                                child: Icon(
-                                  Icons.pets,
-                                  size: 70,
-                                  color: Colors.purple,
-                                ),
-                              );
-                            },
+                          child: ClipOval(
+                            child: ShaderMask(
+                              shaderCallback: (bounds) {
+                                return LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: const [
+                                    Color(0xFF4158D0),
+                                    Color(0xFFC850C0),
+                                    Color(0xFFFFCC70),
+                                  ],
+                                  stops: const [0.0, 0.5, 1.0],
+                                ).createShader(bounds);
+                              },
+                              child: Image.asset(
+                                'assets/images/maneki-neko.png',
+                                fit: BoxFit.contain,
+                                color: Colors.white,
+                                colorBlendMode: BlendMode.srcATop,
+                                errorBuilder: (context, error, stackTrace) {
+                                  print('😿 Ошибка загрузки картинки: $error');
+                                  return Container(
+                                    color: Colors.purple.withOpacity(0.2),
+                                    child: Icon(
+                                      Icons.pets,
+                                      size: 70,
+                                      color: Colors.purple,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                  )
-                      .animate()
-                      .fadeIn(
-                        duration: 800.ms,
-                        curve: Curves.easeOut,
                       )
+                      .animate()
+                      .fadeIn(duration: 800.ms, curve: Curves.easeOut)
                       .scale(
                         begin: const Offset(0.8, 0.8),
                         curve: Curves.elasticOut,
@@ -212,8 +228,10 @@ class _RegisterScreenState extends State<RegisterScreen>
                               controller: _emailController,
                               decoration: InputDecoration(
                                 labelText: 'Email',
-                                prefixIcon: Icon(Icons.email,
-                                    color: colorScheme.primary),
+                                prefixIcon: Icon(
+                                  Icons.email,
+                                  color: colorScheme.primary,
+                                ),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
@@ -236,8 +254,10 @@ class _RegisterScreenState extends State<RegisterScreen>
                               controller: _passwordController,
                               decoration: InputDecoration(
                                 labelText: 'Пароль',
-                                prefixIcon: Icon(Icons.lock,
-                                    color: colorScheme.primary),
+                                prefixIcon: Icon(
+                                  Icons.lock,
+                                  color: colorScheme.primary,
+                                ),
                                 suffixIcon: IconButton(
                                   icon: Icon(
                                     _obscurePassword
@@ -246,8 +266,10 @@ class _RegisterScreenState extends State<RegisterScreen>
                                     color: colorScheme.primary,
                                   ),
                                   onPressed: () {
-                                    setState(() =>
-                                        _obscurePassword = !_obscurePassword);
+                                    setState(
+                                      () =>
+                                          _obscurePassword = !_obscurePassword,
+                                    );
                                   },
                                 ),
                                 border: OutlineInputBorder(
@@ -275,8 +297,10 @@ class _RegisterScreenState extends State<RegisterScreen>
                               controller: _confirmPasswordController,
                               decoration: InputDecoration(
                                 labelText: 'Повторите пароль',
-                                prefixIcon: Icon(Icons.lock_outline,
-                                    color: colorScheme.primary),
+                                prefixIcon: Icon(
+                                  Icons.lock_outline,
+                                  color: colorScheme.primary,
+                                ),
                                 suffixIcon: IconButton(
                                   icon: Icon(
                                     _obscureConfirmPassword
@@ -321,7 +345,8 @@ class _RegisterScreenState extends State<RegisterScreen>
                                 ),
                                 child: _isLoading
                                     ? const CircularProgressIndicator(
-                                        color: Colors.white)
+                                        color: Colors.white,
+                                      )
                                     : const Text(
                                         '🐱 Создать аккаунт',
                                         style: TextStyle(
@@ -339,8 +364,9 @@ class _RegisterScreenState extends State<RegisterScreen>
                               child: RichText(
                                 text: TextSpan(
                                   text: 'Уже есть аккаунт? ',
-                                  style:
-                                      TextStyle(color: colorScheme.onSurface),
+                                  style: TextStyle(
+                                    color: colorScheme.onSurface,
+                                  ),
                                   children: [
                                     TextSpan(
                                       text: 'Войти',
@@ -362,17 +388,23 @@ class _RegisterScreenState extends State<RegisterScreen>
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.favorite,
-                          size: 16,
-                          color: colorScheme.primary.withOpacity(0.3)),
+                      Icon(
+                        Icons.favorite,
+                        size: 16,
+                        color: colorScheme.primary.withOpacity(0.3),
+                      ),
                       const SizedBox(width: 8),
-                      Icon(Icons.pets,
-                          size: 20,
-                          color: colorScheme.primary.withOpacity(0.5)),
+                      Icon(
+                        Icons.pets,
+                        size: 20,
+                        color: colorScheme.primary.withOpacity(0.5),
+                      ),
                       const SizedBox(width: 8),
-                      Icon(Icons.favorite,
-                          size: 16,
-                          color: colorScheme.primary.withOpacity(0.3)),
+                      Icon(
+                        Icons.favorite,
+                        size: 16,
+                        color: colorScheme.primary.withOpacity(0.3),
+                      ),
                     ],
                   ),
                 ],

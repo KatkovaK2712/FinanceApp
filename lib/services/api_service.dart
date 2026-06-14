@@ -124,6 +124,10 @@ class ApiService {
     return _currentUserId != null;
   }
 
+  static set currentUserId(String? id) {
+    _currentUserId = id;
+  }
+
   static Future<void> logout() async {
     _currentUserId = null;
     final prefs = await SharedPreferences.getInstance();
