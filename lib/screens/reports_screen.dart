@@ -735,7 +735,7 @@ class _ReportsScreenState extends State<ReportsScreen>
   }
 
   String _formatAmount(double amount) {
-    return '${NumberFormat('#,##0', 'ru_RU').format(amount.round())} ₽';
+    return '${NumberFormat('#,##0.00', 'ru_RU').format(amount)} ₽';
   }
 
   String _getBudgetTypeName(String? type) {

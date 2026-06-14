@@ -256,8 +256,7 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
       if (monthlyRate == 0) {
         result = principal / months;
       } else {
-        final factor =
-            monthlyRate *
+        final factor = monthlyRate *
             pow(1 + monthlyRate, months) /
             (pow(1 + monthlyRate, months) - 1);
         result = principal * factor;
@@ -272,8 +271,8 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
     return result.roundToDouble();
   }
 
-  String _formatCurrency(double value) {
-    return '${NumberFormat('#,##0', 'ru_RU').format(value.round())} ₽';
+  String _formatCurrency(double amount) {
+    return '${NumberFormat('#,##0.00', 'ru_RU').format(amount)} ₽';
   }
 
   String? _validateRequiredFields() {
@@ -314,8 +313,7 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
       if (_loanAmountController.text.isEmpty) {
         return 'Введите сумму основного долга';
       }
-      final hasTerm =
-          _loanTermYearsController.text.isNotEmpty ||
+      final hasTerm = _loanTermYearsController.text.isNotEmpty ||
           _loanTermMonthsController.text.isNotEmpty ||
           _loanTermDaysController.text.isNotEmpty;
       if (!hasTerm) {
@@ -506,8 +504,7 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
         if (monthlyRate == 0) {
           calculatedMonthlyPayment = principal / months;
         } else {
-          final factor =
-              monthlyRate *
+          final factor = monthlyRate *
               pow(1 + monthlyRate, months) /
               (pow(1 + monthlyRate, months) - 1);
           calculatedMonthlyPayment = principal * factor;
@@ -533,9 +530,8 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
         '📊 Кредит: основной долг = $principal, проценты = $totalInterest, ежемесячный платёж = $calculatedMonthlyPayment, баланс = $balance, срок = $months мес',
       );
     } else {
-      String balanceRaw = _balanceController.text
-          .replaceAll(' ', '')
-          .replaceAll(',', '.');
+      String balanceRaw =
+          _balanceController.text.replaceAll(' ', '').replaceAll(',', '.');
       balance = double.tryParse(balanceRaw) ?? 0;
     }
 
@@ -583,8 +579,7 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
       termMonthsValue = int.tryParse(_termMonthsController.text);
     }
 
-    final accountId =
-        widget.accountToEdit?.id ??
+    final accountId = widget.accountToEdit?.id ??
         'acc_${DateTime.now().millisecondsSinceEpoch}';
 
     final account = Account(
@@ -605,28 +600,25 @@ class _AddAccountSheetState extends State<AddAccountSheet> {
           ? double.tryParse(_rateController.text)
           : null,
       interestAccountId: _selectedInterestAccountId,
-      interestPeriod: _selectedType == AccountType.savings
-          ? _selectedInterestPeriod
-          : null,
+      interestPeriod:
+          _selectedType == AccountType.savings ? _selectedInterestPeriod : null,
       interestCalculationType: _selectedType == AccountType.savings
           ? _selectedCalculationType
           : null,
       interestPaymentDate: paymentDate,
 
       // Для вклада
-      isCapitalized: _selectedType == AccountType.deposit
-          ? _isCapitalization
-          : null,
+      isCapitalized:
+          _selectedType == AccountType.deposit ? _isCapitalization : null,
       capitalizationFrequency:
           _selectedType == AccountType.deposit && _isCapitalization
-          ? _selectedCapitalizationFrequency
-          : null,
+              ? _selectedCapitalizationFrequency
+              : null,
       termMonths: _selectedType == AccountType.deposit ? termMonthsValue : null,
       closureAccountId: _selectedClosureAccountId,
       allowDeposit: _selectedType == AccountType.deposit ? _allowDeposit : null,
-      allowWithdraw: _selectedType == AccountType.deposit
-          ? _allowWithdraw
-          : null,
+      allowWithdraw:
+          _selectedType == AccountType.deposit ? _allowWithdraw : null,
       depositStartDate: depositStartDate,
       depositEndDate: depositEndDate,
       depositTermYears: depositTermYears,
